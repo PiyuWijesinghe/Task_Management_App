@@ -6,13 +6,13 @@
     <title>Login - Task Manager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
+        body { font-family: Arial, sans-serif; background: #abc0eb; padding: 20px; }
         .container { max-width: 400px; margin: 50px auto; background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         h2 { text-align: center; margin-bottom: 20px; color: #333; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; color: #555; }
         input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
-        button { width: 100%; padding: 12px; background: #ff00d4; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+        button { width: 100%; padding: 12px; background: #7c94ec; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
         button:hover { background: #0056b3; }
         .link { text-align: center; margin-top: 15px; }
         .link a { color: #007bff; text-decoration: none; }
@@ -24,7 +24,7 @@
         <h2>Login</h2>
         
         @if (session('status'))
-            <div style="color: green; margin-bottom: 15px; text-align: center;">{{ session('status') }}</div>
+            <div style="color: rgb(35, 118, 55); margin-bottom: 15px; text-align: center;">{{ session('status') }}</div>
         @endif
 
         <form method="POST" action="{{ route('login') }}">

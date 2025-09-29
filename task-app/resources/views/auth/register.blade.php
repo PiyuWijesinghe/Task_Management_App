@@ -6,8 +6,8 @@
     <title>Register - Task Manager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
-        .container { max-width: 400px; margin: 50px auto; background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        body { font-family: Arial, sans-serif; background: #aee0bb; padding: 20px; }
+        .container { max-width: 400px; margin: 50px auto; background: rgb(193, 215, 191); border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         h2 { text-align: center; margin-bottom: 20px; color: #333; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; color: #555; }
