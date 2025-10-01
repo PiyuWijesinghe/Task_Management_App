@@ -404,7 +404,7 @@
                                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ $task->created_at->diffForHumans() }}</p>
                                         </div>
                                     </div>
-                                    <span class="px-2 py-1 text-xs font-medium rounded-full {{ $task->status === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : ($task->status === 'In Progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100' : 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100') }}">
+                                    <span class="px-3 py-1 text-xs font-semibold rounded-full shadow-md {{ $task->status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : ($task->status === 'In Progress' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white') }}">
                                         {{ $task->status }}
                                     </span>
                                 </div>
@@ -494,7 +494,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="flex items-center space-x-2 ml-4">
-                                                        <span class="px-3 py-1 text-xs font-medium rounded-full {{ $task->status === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : ($task->status === 'In Progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100' : 'bg-blue-500 text-white') }}">
+                                                        <span class="px-3 py-1 text-xs font-semibold rounded-full shadow-md {{ $task->status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : ($task->status === 'In Progress' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white') }}">
                                                             {{ $task->status }}
                                                         </span>
                                                     </div>
@@ -509,6 +509,20 @@
                                                 </svg>
                                                 Edit
                                             </a>
+
+                                            <!-- Mark as Completed Button (only show for non-completed tasks) -->
+                                            @if($task->status !== 'Completed')
+                                            <form action="{{ route('tasks.complete', $task) }}" method="POST" class="inline-block" onsubmit="return confirm('Mark this task as completed?')">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-xs font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                    ✓ Complete
+                                                </button>
+                                            </form>
+                                            @endif
                                             
                                             <!-- Delete Button -->
                                             <form action="{{ route('tasks.destroy', $task) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this task?')">
