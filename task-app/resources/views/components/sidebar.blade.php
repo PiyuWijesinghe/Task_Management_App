@@ -57,6 +57,16 @@
                     Create Task
                 </a>
 
+                <!-- Assign User -->
+                <a href="{{ route('tasks.create') }}" class="text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105 group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm">
+                    <div class="w-8 h-8 bg-gray-100 dark:bg-gray-700 group-hover:bg-gradient-to-r group-hover:from-purple-500 group-hover:to-indigo-600 rounded-lg flex items-center justify-center mr-3 transition-all duration-200">
+                        <svg class="text-gray-500 group-hover:text-white h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                        </svg>
+                    </div>
+                    Assign User
+                </a>
+
                 <!-- Pending Tasks -->
                 <a href="{{ route('tasks.index', ['status' => 'Pending']) }}" class="{{ request()->get('status') === 'Pending' ? 'bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-700 dark:text-orange-200 border border-orange-200/50 dark:border-orange-500/30' : 'text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105' }} group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm">
                     <div class="w-8 h-8 {{ request()->get('status') === 'Pending' ? 'bg-gradient-to-r from-orange-500 to-red-600' : 'bg-gray-100 dark:bg-gray-700 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-red-600' }} rounded-lg flex items-center justify-center mr-3 transition-all duration-200">

@@ -22,9 +22,20 @@ class User extends Authenticatable
         'email',
         'password',
     ];
+    /**
+     * Get tasks created by this user.
+     */
     public function tasks()
     {
         return $this->hasMany(Task::class);
+    }
+
+    /**
+     * Get tasks assigned to this user.
+     */
+    public function assignedTasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_user_id');
     }
 
     /**

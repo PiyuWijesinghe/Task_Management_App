@@ -57,6 +57,16 @@
                             Create Task
                         </a>
 
+                        <!-- Assign User -->
+                        <a href="{{ route('tasks.assign') }}" class="text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105 group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm">
+                            <div class="w-8 h-8 bg-gray-100 dark:bg-gray-700 group-hover:bg-gradient-to-r group-hover:from-purple-500 group-hover:to-indigo-600 rounded-lg flex items-center justify-center mr-3 transition-all duration-200">
+                                <svg class="text-gray-500 group-hover:text-white h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                                </svg>
+                            </div>
+                            Assign User
+                        </a>
+
                         <!-- Pending Tasks -->
                         <a href="{{ route('tasks.index', ['status' => 'Pending']) }}" class="text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105 group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm">
                             <div class="w-8 h-8 bg-gray-100 dark:bg-gray-700 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-red-600 rounded-lg flex items-center justify-center mr-3 transition-all duration-200">
@@ -220,10 +230,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
                 @php
                     $user = Auth::user();
-                    $totalTasks = $user->tasks()->count();
-                    $pendingTasks = $user->tasks()->where('status', 'Pending')->count();
-                    $inProgressTasks = $user->tasks()->where('status', 'In Progress')->count();
-                    $completedTasks = $user->tasks()->where('status', 'Completed')->count();
+                    // Get both created and assigned tasks
+                    $allUserTasksQuery = App\Models\Task::where('user_id', $user->id)
+                        ->orWhere('assigned_user_id', $user->id);
+                    $totalTasks = $allUserTasksQuery->count();
+                    $pendingTasks = $allUserTasksQuery->where('status', 'Pending')->count();
+                    $inProgressTasks = $allUserTasksQuery->where('status', 'In Progress')->count();
+                    $completedTasks = $allUserTasksQuery->where('status', 'Completed')->count();
                 @endphp
                 
                 <div class="group relative overflow-hidden shadow-2xl rounded-2xl border border-white/20 dark:border-gray-700/20 backdrop-blur-xl hover:scale-105 transition-all duration-300" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
@@ -392,7 +405,13 @@
                         </h3>
                         <div class="space-y-3">
                             @php
-                                $recentTasks = Auth::user()->tasks()->orderBy('created_at', 'desc')->limit(5)->get();
+                                // Get both created and assigned tasks for recent tasks
+                                $currentUser = Auth::user();
+                                $recentTasks = App\Models\Task::where('user_id', $currentUser->id)
+                                    ->orWhere('assigned_user_id', $currentUser->id)
+                                    ->orderBy('created_at', 'desc')
+                                    ->limit(5)
+                                    ->get();
                             @endphp
                             
                             @forelse($recentTasks as $task)
@@ -459,7 +478,12 @@
                     </div>
 
                     @php
-                        $allUserTasks = Auth::user()->tasks()->orderBy('created_at', 'desc')->get();
+                        // Get both created and assigned tasks for all tasks management
+                        $currentUser = Auth::user();
+                        $allUserTasks = App\Models\Task::where('user_id', $currentUser->id)
+                            ->orWhere('assigned_user_id', $currentUser->id)
+                            ->orderBy('created_at', 'desc')
+                            ->get();
                     @endphp
 
                     @if($allUserTasks->count() > 0)
@@ -483,32 +507,54 @@
                                                                 </svg>
                                                                 Created {{ $task->created_at->diffForHumans() }}
                                                             </span>
+                                                            @if($task->assigned_user_id && $task->assigned_user_id !== Auth::id())
+                                                            <span class="flex items-center text-purple-600 dark:text-purple-400">
+                                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                                </svg>
+                                                                Assigned to {{ $task->assignedUser->name }}
+                                                            </span>
+                                                            @elseif($task->user_id !== Auth::id())
+                                                            <span class="flex items-center text-blue-600 dark:text-blue-400">
+                                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                                </svg>
+                                                                Assigned by {{ $task->user->name }}
+                                                            </span>
+                                                            @endif
                                                             @if($task->due_date)
-                                                            <span class="flex items-center">
+                                                            <span class="flex items-center {{ $task->due_date->isPast() && $task->status !== 'Completed' ? 'text-red-600 dark:text-red-400 font-semibold' : ($task->due_date->isToday() && $task->status !== 'Completed' ? 'text-orange-600 dark:text-orange-400 font-semibold' : '') }}">
                                                                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0v5m0 0v5a2 2 0 002 2h4a2 2 0 002-2v-5m-6 0h6M9 11h6"></path>
                                                                 </svg>
-                                                                Due {{ $task->due_date->format('M d, Y') }}
+                                                                @if($task->due_date->isPast() && $task->status !== 'Completed')
+                                                                    ⚠️ Overdue: {{ $task->due_date->format('M d, Y') }}
+                                                                @elseif($task->due_date->isToday() && $task->status !== 'Completed')
+                                                                    🕐 Due Today: {{ $task->due_date->format('M d, Y') }}
+                                                                @else
+                                                                    Due {{ $task->due_date->format('M d, Y') }}
+                                                                @endif
                                                             </span>
                                                             @endif
                                                         </div>
-                                                    </div>
-                                                    <div class="flex items-center space-x-2 ml-4">
-                                                        <span class="px-3 py-1 text-xs font-semibold rounded-full shadow-md {{ $task->status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : ($task->status === 'In Progress' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white') }}">
-                                                            {{ $task->status }}
-                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="flex items-center space-x-2 ml-4">
-                                            <!-- Edit Button -->
+                                            <!-- Status Badge -->
+                                            <span class="px-3 py-1 text-xs font-semibold rounded-full shadow-md {{ $task->status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : ($task->status === 'In Progress' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white') }}">
+                                                {{ $task->status }}
+                                            </span>
+                                            <!-- Edit Button (only for task creator) -->
+                                            @can('update', $task)
                                             <a href="{{ route('tasks.edit', $task) }}" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">
                                                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                                 </svg>
                                                 Edit
                                             </a>
+                                            @endcan
 
                                             <!-- Mark as Completed Button (only show for non-completed tasks) -->
                                             @if($task->status !== 'Completed')
@@ -524,7 +570,8 @@
                                             </form>
                                             @endif
                                             
-                                            <!-- Delete Button -->
+                                            <!-- Delete Button (only for task creator) -->
+                                            @can('delete', $task)
                                             <form action="{{ route('tasks.destroy', $task) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this task?')">
                                                 @csrf
                                                 @method('DELETE')
@@ -535,6 +582,7 @@
                                                     Delete
                                                 </button>
                                             </form>
+                                            @endcan
                                         </div>
                                     </div>
                                 </div>
