@@ -37,14 +37,14 @@
                             <div class="ml-auto w-2 h-2 bg-blue-500 rounded-full"></div>
                         </a>
 
-                        <!-- All Tasks -->
+                        <!-- Task Management -->
                         <a href="{{ route('tasks.index') }}" class="text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105 group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm">
                             <div class="w-8 h-8 bg-gray-100 dark:bg-gray-700 group-hover:bg-gradient-to-r group-hover:from-purple-500 group-hover:to-indigo-600 rounded-lg flex items-center justify-center mr-3 transition-all duration-200">
                                 <svg class="text-gray-500 group-hover:text-white h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                                 </svg>
                             </div>
-                            All Tasks
+                            Task Management
                         </a>
 
                         <!-- Create Task -->
@@ -65,6 +65,16 @@
                                 </svg>
                             </div>
                             Pending Tasks
+                        </a>
+
+                        <!-- In Progress Tasks -->
+                        <a href="{{ route('tasks.index', ['status' => 'In Progress']) }}" class="text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105 group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm">
+                            <div class="w-8 h-8 bg-gray-100 dark:bg-gray-700 group-hover:bg-gradient-to-r group-hover:from-yellow-500 group-hover:to-orange-600 rounded-lg flex items-center justify-center mr-3 transition-all duration-200">
+                                <svg class="text-gray-500 group-hover:text-white h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            In Progress Tasks
                         </a>
 
                         <!-- Completed Tasks -->
@@ -132,6 +142,43 @@
         <!-- Main Content -->
         <div class="flex-1 overflow-auto bg-transparent">
             <div class="p-6">
+                <!-- Success Message -->
+                @if (session('success'))
+                    <div class="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-700 rounded-2xl p-4 backdrop-blur-xl shadow-lg animate-bounce" id="success-message">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center pulse-soft">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <p class="text-sm font-semibold text-green-800 dark:text-green-200 flex items-center">
+                                    🎉 Success!
+                                </p>
+                                <p class="text-sm text-green-700 dark:text-green-300">{{ session('success') }}</p>
+                            </div>
+                            <button onclick="document.getElementById('success-message').style.display='none'" class="ml-auto text-green-500 hover:text-green-700 dark:text-green-300 dark:hover:text-green-100 transition-colors duration-200">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <script>
+                        // Auto-hide success message after 5 seconds
+                        setTimeout(function() {
+                            const successMessage = document.getElementById('success-message');
+                            if (successMessage) {
+                                successMessage.style.transform = 'translateY(-100%)';
+                                successMessage.style.opacity = '0';
+                                setTimeout(() => successMessage.style.display = 'none', 300);
+                            }
+                        }, 5000);
+                    </script>
+                @endif
             <!-- Welcome Section -->
             <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl overflow-hidden shadow-2xl rounded-2xl mb-6 border border-white/20 dark:border-gray-700/20">
                 <div class="relative p-8" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
@@ -149,20 +196,7 @@
                                     <p class="text-blue-100 text-sm">Ready to manage your tasks and boost productivity?</p>
                                 </div>
                             </div>
-                            <div class="flex items-center space-x-4 text-sm">
-                                <div class="flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>{{ now()->format('l, F d, Y') }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>{{ now()->format('g:i A') }}</span>
-                                </div>
-                            </div>
+
                         </div>
                         <div class="hidden lg:block">
                             <div class="relative float-animation">
@@ -183,11 +217,12 @@
             </div>
 
             <!-- Quick Stats -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
                 @php
                     $user = Auth::user();
                     $totalTasks = $user->tasks()->count();
                     $pendingTasks = $user->tasks()->where('status', 'Pending')->count();
+                    $inProgressTasks = $user->tasks()->where('status', 'In Progress')->count();
                     $completedTasks = $user->tasks()->where('status', 'Completed')->count();
                 @endphp
                 
@@ -230,13 +265,40 @@
                                     </div>
                                 </div>
                                 <div class="ml-4">
-                                    <p class="text-sm font-medium text-white/80">Pending</p>
+                                    <p class="text-sm font-medium text-white">Pending</p>
                                     <p class="text-3xl font-bold text-white">{{ $pendingTasks }}</p>
                                 </div>
                             </div>
                             <div class="text-white/30">
                                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- In Progress Tasks Card -->
+                <div class="group relative overflow-hidden shadow-2xl rounded-2xl border border-white/20 dark:border-gray-700/20 backdrop-blur-xl hover:scale-105 transition-all duration-300" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <div class="absolute inset-0 bg-gradient-to-r from-yellow-600/10 to-orange-600/10"></div>
+                    <div class="relative p-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="flex items-center justify-center h-14 w-14 rounded-2xl text-white bg-white/20 backdrop-blur-sm">
+                                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-white/80">In Progress</p>
+                                    <p class="text-3xl font-bold text-white">{{ $inProgressTasks }}</p>
+                                </div>
+                            </div>
+                            <div class="text-white/30">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"></path>
                                 </svg>
                             </div>
                         </div>
@@ -338,7 +400,7 @@
                                     <div class="flex items-center">
                                         <div class="w-3 h-3 rounded-full mr-3 {{ $task->status === 'Completed' ? 'bg-green-500' : ($task->status === 'In Progress' ? 'bg-yellow-500' : 'bg-gray-400') }}"></div>
                                         <div>
-                                            <p class="text-sm font-medium text-gray-900 dark:text-white">{{ Str::limit($task->name, 30) }}</p>
+                                            <p class="text-sm font-medium text-gray-900 dark:text-white">{{ Str::limit($task->title, 30) }}</p>
                                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ $task->created_at->diffForHumans() }}</p>
                                         </div>
                                     </div>
@@ -376,6 +438,123 @@
                 </div>
             </div>
             
+            <!-- All Tasks Management -->
+            <div class="mt-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl overflow-hidden shadow-2xl rounded-2xl border border-white/20 dark:border-gray-700/20">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                            <div class="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 00-2 2v2m0 0V9a2 2 0 012-2h14a2 2 0 012 2v2M7 7V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7v2a2 2 0 002 2h6a2 2 0 002-2V7"></path>
+                                </svg>
+                            </div>
+                            All Tasks Management
+                        </h3>
+                        <a href="{{ route('tasks.create') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-lg">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            New Task
+                        </a>
+                    </div>
+
+                    @php
+                        $allUserTasks = Auth::user()->tasks()->orderBy('created_at', 'desc')->get();
+                    @endphp
+
+                    @if($allUserTasks->count() > 0)
+                        <div class="space-y-3">
+                            @foreach($allUserTasks as $task)
+                                <div class="bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm rounded-xl border border-white/20 dark:border-gray-600/20 p-4 hover:bg-white/70 dark:hover:bg-gray-600/70 transition-all duration-300 hover:scale-[1.01] hover:shadow-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center flex-1">
+                                            <div class="w-4 h-4 rounded-full mr-4 {{ $task->status === 'Completed' ? 'bg-green-500' : ($task->status === 'In Progress' ? 'bg-yellow-500' : 'bg-blue-500') }}"></div>
+                                            <div class="flex-1">
+                                                <div class="flex items-start justify-between">
+                                                    <div class="flex-1">
+                                                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">{{ $task->title }}</h4>
+                                                        @if($task->description)
+                                                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">{{ Str::limit($task->description, 100) }}</p>
+                                                        @endif
+                                                        <div class="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+                                                            <span class="flex items-center">
+                                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0v5m0 0v5a2 2 0 002 2h4a2 2 0 002-2v-5m-6 0h6"></path>
+                                                                </svg>
+                                                                Created {{ $task->created_at->diffForHumans() }}
+                                                            </span>
+                                                            @if($task->due_date)
+                                                            <span class="flex items-center">
+                                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0v5m0 0v5a2 2 0 002 2h4a2 2 0 002-2v-5m-6 0h6M9 11h6"></path>
+                                                                </svg>
+                                                                Due {{ $task->due_date->format('M d, Y') }}
+                                                            </span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex items-center space-x-2 ml-4">
+                                                        <span class="px-3 py-1 text-xs font-medium rounded-full {{ $task->status === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : ($task->status === 'In Progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100' : 'bg-blue-500 text-white') }}">
+                                                            {{ $task->status }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2 ml-4">
+                                            <!-- Edit Button -->
+                                            <a href="{{ route('tasks.edit', $task) }}" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">
+                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
+                                                Edit
+                                            </a>
+                                            
+                                            <!-- Delete Button -->
+                                            <form action="{{ route('tasks.destroy', $task) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this task?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    </svg>
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        
+                        <div class="mt-6 text-center">
+                            <a href="{{ route('tasks.index') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-lg">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 00-2 2v2m0 0V9a2 2 0 012-2h14a2 2 0 012 2v2M7 7V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7v2a2 2 0 002 2h6a2 2 0 002-2V7"></path>
+                                </svg>
+                                View Detailed Task Management
+                            </a>
+                        </div>
+                    @else
+                        <div class="text-center py-12">
+                            <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No tasks yet!</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">Get started by creating your first task to boost your productivity.</p>
+                            <a href="{{ route('tasks.create') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-lg">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Create Your First Task
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             <!-- Task Progress Chart -->
             <div class="mt-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl overflow-hidden shadow-2xl rounded-2xl border border-white/20 dark:border-gray-700/20">
                 <div class="p-6">
@@ -390,6 +569,7 @@
                     <div class="space-y-4">
                         @php
                             $progressPercentage = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
+                            $inProgressPercentage = $totalTasks > 0 ? round(($inProgressTasks / $totalTasks) * 100) : 0;
                         @endphp
                         
                         <div>
@@ -402,7 +582,7 @@
                             </div>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="grid grid-cols-3 gap-4 text-center">
                             <div class="p-4 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm rounded-xl border border-white/20 dark:border-gray-600/20 hover:scale-105 transition-all duration-300">
                                 <div class="w-12 h-12 bg-gradient-to-r from-orange-400 to-red-500 rounded-xl flex items-center justify-center mx-auto mb-2">
                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -410,7 +590,16 @@
                                     </svg>
                                 </div>
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $pendingTasks }}</p>
-                                <p class="text-sm text-gray-600 dark:text-gray-300 font-medium">Pending</p>
+                                <p class="text-sm text-white font-medium">Pending</p>
+                            </div>
+                            <div class="p-4 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm rounded-xl border border-white/20 dark:border-gray-600/20 hover:scale-105 transition-all duration-300">
+                                <div class="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center mx-auto mb-2">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $inProgressTasks }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 font-medium">In Progress</p>
                             </div>
                             <div class="p-4 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm rounded-xl border border-white/20 dark:border-gray-600/20 hover:scale-105 transition-all duration-300">
                                 <div class="w-12 h-12 bg-gradient-to-r from-green-400 to-teal-500 rounded-xl flex items-center justify-center mx-auto mb-2">
