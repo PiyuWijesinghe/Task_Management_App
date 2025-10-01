@@ -1,15 +1,20 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="bg-gradient-to-r from-green-500 to-teal-500 text-white p-6 rounded-lg shadow-lg">
-            <h2 class="font-bold text-2xl mb-2">Task Details</h2>
-            <p class="text-green-100">View and manage your task information</p>
-        </div>
-    </x-slot>
+    <div class="flex h-screen bg-transparent">
+        <!-- Sidebar -->
+        <x-sidebar />
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-xl border border-gray-200 dark:border-gray-700">
-                <div class="p-8 text-gray-900 dark:text-gray-100">
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto bg-transparent">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-green-500/90 to-teal-500/90 backdrop-blur-xl text-white p-6 m-6 rounded-2xl shadow-2xl border border-white/20">
+                <h2 class="font-bold text-2xl mb-2">Task Details</h2>
+                <p class="text-green-100">View and manage your task information</p>
+            </div>
+
+            <div class="p-6">
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl overflow-hidden shadow-2xl rounded-2xl border border-white/20 dark:border-gray-700/20">
+                        <div class="p-8 text-gray-900 dark:text-gray-100">
                     <div class="space-y-6">
                         <!-- Task Title -->
                         <div>
@@ -83,6 +88,7 @@
                             @endif
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </div>
