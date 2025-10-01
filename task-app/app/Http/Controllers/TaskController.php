@@ -13,13 +13,35 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-    $user = auth()->user();
-    $pending = $user->tasks()->where('status', 'Pending')->get();
-    $inProgress = $user->tasks()->where('status', 'In Progress')->get();
-    $completed = $user->tasks()->where('status', 'Completed')->get();
-    return view('tasks.index', compact('pending', 'inProgress', 'completed'));
+        $user = auth()->user();
+        
+        // Get tasks by status with proper filtering
+        $pending = $user->tasks()->where('status', 'Pending')->orderBy('created_at', 'desc')->get();
+        $inProgress = $user->tasks()->where('status', 'In Progress')->orderBy('created_at', 'desc')->get();
+        $completed = $user->tasks()->where('status', 'Completed')->orderBy('created_at', 'desc')->get();
+        
+        // If filtering by status (from sidebar links)
+        if ($request->has('status')) {
+            $filterStatus = $request->get('status');
+            switch($filterStatus) {
+                case 'Pending':
+                    $inProgress = collect();
+                    $completed = collect();
+                    break;
+                case 'In Progress':
+                    $pending = collect();
+                    $completed = collect();
+                    break;
+                case 'Completed':
+                    $pending = collect();
+                    $inProgress = collect();
+                    break;
+            }
+        }
+        
+        return view('tasks.index', compact('pending', 'inProgress', 'completed'));
     }
 
     /**
@@ -43,7 +65,7 @@ class TaskController extends Controller
         ]);
         $validated['user_id'] = auth()->id();
         $task = Task::create($validated);
-        return redirect()->route('tasks.show', $task)->with('success', 'Task created successfully!');
+        return redirect()->route('dashboard')->with('success', 'Task "' . $task->title . '" created successfully and added to your dashboard!');
     }
 
     /**
@@ -77,7 +99,7 @@ class TaskController extends Controller
             'status' => 'required|in:Pending,In Progress,Completed',
         ]);
         $task->update($validated);
-        return redirect()->route('tasks.show', $task)->with('success', 'Task updated successfully!');
+        return redirect()->route('tasks.index')->with('success', 'Task updated successfully!');
     }
 
     /**

@@ -6,14 +6,14 @@
     <title>Login - Task Manager</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #abc0eb; padding: 20px; }
-        .container { max-width: 400px; margin: 50px auto; background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; margin-bottom: 20px; color: #333; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #667eea 50%, #764ba2 75%, #f093fb 100%); padding: 20px; min-height: 100vh; }
+        .container { max-width: 400px; margin: 50px auto; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); border-radius: 20px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        h2 { text-align: center; margin-bottom: 20px; color: #333; font-weight: bold; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #555; }
-        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
-        button { width: 100%; padding: 12px; background: #7c94ec; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
-        button:hover { background: #0056b3; }
+        label { display: block; margin-bottom: 5px; color: #555; font-weight: 500; }
+        input { width: 100%; padding: 12px; border: 1px solid rgba(102, 126, 234, 0.2); border-radius: 12px; font-size: 14px; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); }
+        button { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 16px; cursor: pointer; font-weight: 600; }
+        button:hover { background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%); transform: translateY(-2px); }
         .link { text-align: center; margin-top: 15px; }
         .link a { color: #007bff; text-decoration: none; }
         .error { color: red; font-size: 12px; margin-top: 5px; }
