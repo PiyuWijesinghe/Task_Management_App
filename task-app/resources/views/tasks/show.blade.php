@@ -46,10 +46,26 @@
                                     {{ $task->status }}
                                 </span>
                             </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Created By</h3>
+                                <p class="text-gray-600 dark:text-gray-400">
+                                    {{ $task->user->name }}
+                                </p>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Assigned To</h3>
+                                <p class="text-gray-600 dark:text-gray-400">
+                                    {{ $task->assignedUser ? $task->assignedUser->name : 'Not assigned' }}
+                                    @if($task->assigned_user_id === auth()->id() && $task->user_id !== auth()->id())
+                                        <span class="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded-full">You (View Only)</span>
+                                    @endif
+                                </p>
+                            </div>
                         </div>
 
                         <!-- Actions -->
                         <div class="flex flex-wrap gap-4 pt-8 border-t border-gray-200 dark:border-gray-600">
+                            @can('update', $task)
                             <a href="{{ route('tasks.edit', $task) }}" 
                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold rounded-lg shadow-lg transition duration-300 transform hover:scale-105">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,7 +73,9 @@
                                 </svg>
                                 {{ __('Edit Task') }}
                             </a>
+                            @endcan
                             
+                            @can('delete', $task)
                             <form action="{{ route('tasks.destroy', $task) }}" method="POST" class="inline-block" 
                                   onsubmit="return confirm('Are you sure you want to delete this task? This action cannot be undone.');">
                                 @csrf
@@ -70,6 +88,7 @@
                                     {{ __('Delete Task') }}
                                 </button>
                             </form>
+                            @endcan
                             
                             <a href="{{ route('tasks.index') }}" 
                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-lg shadow-lg transition duration-300 transform hover:scale-105">

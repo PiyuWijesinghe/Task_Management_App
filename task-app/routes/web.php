@@ -26,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('tasks', TaskController::class);
     Route::patch('/tasks/{task}/complete', [TaskController::class, 'markAsCompleted'])->name('tasks.complete');
+    Route::get('/tasks-assign', [TaskController::class, 'assignPage'])->name('tasks.assign');
+    Route::patch('/tasks/{task}/assign', [TaskController::class, 'assignUser'])->name('tasks.assign.update');
 });
 
 require __DIR__.'/auth.php';

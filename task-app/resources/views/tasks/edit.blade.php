@@ -69,6 +69,7 @@
                                        id="due_date" 
                                        name="due_date" 
                                        value="{{ old('due_date', $task->due_date) }}"
+                                       min="{{ date('Y-m-d') }}"
                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                                 @error('due_date')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -88,6 +89,26 @@
                                     <option value="Completed" {{ old('status', $task->status) == 'Completed' ? 'selected' : '' }}>Completed</option>
                                 </select>
                                 @error('status')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Assign to User -->
+                            <div class="space-y-2">
+                                <label for="assigned_user_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Assign to User (Optional)
+                                </label>
+                                <select id="assigned_user_id" 
+                                        name="assigned_user_id"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="">Keep task for myself</option>
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}" {{ old('assigned_user_id', $task->assigned_user_id) == $user->id ? 'selected' : '' }}>
+                                            {{ $user->name }} ({{ $user->email }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('assigned_user_id')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>

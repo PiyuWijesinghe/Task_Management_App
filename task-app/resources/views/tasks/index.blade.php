@@ -57,6 +57,16 @@
                             Create Task
                         </a>
 
+                        <!-- Assign User -->
+                        <a href="{{ route('tasks.assign') }}" class="text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105 group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm">
+                            <div class="w-8 h-8 bg-gray-100 dark:bg-gray-700 group-hover:bg-gradient-to-r group-hover:from-purple-500 group-hover:to-indigo-600 rounded-lg flex items-center justify-center mr-3 transition-all duration-200">
+                                <svg class="text-gray-500 group-hover:text-white h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                                </svg>
+                            </div>
+                            Assign User
+                        </a>
+
                         <!-- Pending Tasks -->
                         <a href="{{ route('tasks.index', ['status' => 'Pending']) }}" class="text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105 group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm">
                             <div class="w-8 h-8 bg-gray-100 dark:bg-gray-700 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-red-600 rounded-lg flex items-center justify-center mr-3 transition-all duration-200">
@@ -220,27 +230,36 @@
                                                             Created {{ $task->created_at->diffForHumans() }}
                                                         </span>
                                                         @if($task->due_date)
-                                                        <span class="flex items-center">
+                                                        <span class="flex items-center {{ $task->due_date->isPast() && $task->status !== 'Completed' ? 'text-red-600 dark:text-red-400 font-semibold' : ($task->due_date->isToday() && $task->status !== 'Completed' ? 'text-orange-600 dark:text-orange-400 font-semibold' : '') }}">
                                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                                             </svg>
-                                                            Due {{ $task->due_date->format('M d, Y') }}
+                                                            @if($task->due_date->isPast() && $task->status !== 'Completed')
+                                                                ⚠️ Overdue: {{ $task->due_date->format('M d, Y') }}
+                                                            @elseif($task->due_date->isToday() && $task->status !== 'Completed')
+                                                                🕐 Due Today: {{ $task->due_date->format('M d, Y') }}
+                                                            @else
+                                                                Due {{ $task->due_date->format('M d, Y') }}
+                                                            @endif
                                                         </span>
                                                         @endif
-                                                        <span class="px-3 py-1 text-xs font-semibold rounded-full shadow-md {{ $task->status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : ($task->status === 'In Progress' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white') }}">
-                                                            {{ $task->status }}
-                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="flex items-center space-x-3 ml-6">
-                                                <!-- Edit Button -->
+                                                <!-- Status Badge -->
+                                                <span class="px-3 py-1 text-xs font-semibold rounded-full shadow-md {{ $task->status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : ($task->status === 'In Progress' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white') }}">
+                                                    {{ $task->status }}
+                                                </span>
+                                                <!-- Edit Button (only for task creator) -->
+                                                @can('update', $task)
                                                 <a href="{{ route('tasks.edit', $task) }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">
                                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                                     </svg>
                                                     Edit
                                                 </a>
+                                                @endcan
 
                                                 <!-- Mark as Completed Button (only show for non-completed tasks) -->
                                                 @if($task->status !== 'Completed')
@@ -256,7 +275,8 @@
                                                 </form>
                                                 @endif
                                                 
-                                                <!-- Delete Button -->
+                                                <!-- Delete Button (only for task creator) -->
+                                                @can('delete', $task)
                                                 <form action="{{ route('tasks.destroy', $task) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this task?')">
                                                     @csrf
                                                     @method('DELETE')
@@ -267,6 +287,7 @@
                                                         Delete
                                                     </button>
                                                 </form>
+                                                @endcan
                                             </div>
                                         </div>
                                     </div>
