@@ -22,8 +22,8 @@
             </div>
 
             <!-- Navigation Menu -->
-            <nav class="mt-6">
-                <div class="px-4">
+            <nav class="mt-6 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
+                <div class="px-4 pb-6">
                     <div class="space-y-1">
                         <!-- Dashboard -->
                         <a href="{{ route('dashboard') }}" class="text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105 group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm">

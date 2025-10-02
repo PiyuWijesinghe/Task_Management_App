@@ -1,6 +1,6 @@
 <!-- Sidebar Component -->
-<div class="w-64 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-r border-white/20 dark:border-gray-700/20 shadow-2xl">
-    <div class="p-6 border-b border-white/10 dark:border-gray-700/20">
+<div class="w-64 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-r border-white/20 dark:border-gray-700/20 shadow-2xl flex flex-col h-full overflow-hidden">
+    <div class="p-6 border-b border-white/10 dark:border-gray-700/20 flex-shrink-0">
         <div class="flex items-center">
             <div class="flex-shrink-0">
                 <div class="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
@@ -20,8 +20,8 @@
     </div>
 
     <!-- Navigation Menu -->
-    <nav class="mt-6">
-        <div class="px-4">
+    <nav class="mt-6 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
+        <div class="px-4 pb-6">
             <div class="space-y-1">
                 <!-- Dashboard -->
                 <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 dark:text-blue-200 border border-blue-200/50 dark:border-blue-500/30' : 'text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105' }} group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm shadow-sm">

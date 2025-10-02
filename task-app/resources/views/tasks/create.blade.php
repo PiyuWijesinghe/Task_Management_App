@@ -22,8 +22,8 @@
             </div>
 
             <!-- Navigation Menu -->
-            <nav class="mt-6">
-                <div class="px-4">
+            <nav class="mt-6 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
+                <div class="px-4 pb-6">
                     <div class="space-y-1">
                         <!-- Dashboard -->
                         <a href="{{ route('dashboard') }}" class="text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105 group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm">
@@ -58,7 +58,7 @@
                         </a>
 
                         <!-- Assign User -->
-                        <a href="{{ route('tasks.assign') }}" class="text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105 group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm">
+                        <a href="{{ route('tasks.assign') }}" class="text-gray-700 dark:text-black-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105 group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm">
                             <div class="w-8 h-8 bg-gray-100 dark:bg-gray-700 group-hover:bg-gradient-to-r group-hover:from-purple-500 group-hover:to-indigo-600 rounded-lg flex items-center justify-center mr-3 transition-all duration-200">
                                 <svg class="text-gray-500 group-hover:text-white h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
@@ -237,13 +237,15 @@
                             <!-- Status -->
                             <div class="space-y-2">
                                 <label for="status" class="flex items-center text-sm font-semibold text-gray-900 dark:text-white">
-                                    <svg class="w-4 h-4 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
+                                    <div class="w-4 h-4 mr-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
                                     Status
                                 </label>
                                 <select id="status" name="status" 
-                                    class="block w-full px-4 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-white/20 dark:border-gray-600/20 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all duration-200">
+                                    class="block w-full px-4 py-3 bg-gradient-to-r from-emerald-100 via-teal-100 to-cyan-100 dark:from-emerald-800/50 dark:via-teal-800/50 dark:to-cyan-800/50 backdrop-blur-sm border-2 border-emerald-400 dark:border-emerald-500/60 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 hover:shadow-xl hover:from-emerald-200 hover:via-teal-200 hover:to-cyan-200 dark:hover:from-emerald-700/60 dark:hover:via-teal-700/60 dark:hover:to-cyan-700/60 hover:scale-[1.02]">
                                     <option value="Pending" {{ old('status') == 'Pending' ? 'selected' : '' }}>🔴 Pending</option>
                                     <option value="In Progress" {{ old('status') == 'In Progress' ? 'selected' : '' }}>🟡 In Progress</option>
                                     <option value="Completed" {{ old('status') == 'Completed' ? 'selected' : '' }}>🟢 Completed</option>
@@ -256,13 +258,15 @@
                             <!-- Assign to User -->
                             <div class="space-y-2">
                                 <label for="assigned_user_id" class="flex items-center text-sm font-semibold text-gray-900 dark:text-white">
-                                    <svg class="w-4 h-4 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                    </svg>
+                                    <div class="w-4 h-4 mr-2 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full flex items-center justify-center">
+                                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                    </div>
                                     Assign to User (Optional)
                                 </label>
                                 <select id="assigned_user_id" name="assigned_user_id" 
-                                    class="block w-full px-4 py-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-white/20 dark:border-gray-600/20 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-200">
+                                    class="block w-full px-4 py-3 bg-gradient-to-r from-rose-100 via-pink-100 to-violet-100 dark:from-rose-800/50 dark:via-pink-800/50 dark:to-violet-800/50 backdrop-blur-sm border-2 border-rose-400 dark:border-rose-500/60 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all duration-300 hover:shadow-xl hover:from-rose-200 hover:via-pink-200 hover:to-violet-200 dark:hover:from-rose-700/60 dark:hover:via-pink-700/60 dark:hover:to-violet-700/60 hover:scale-[1.02]">
                                     <option value="">👤 Keep task for myself</option>
                                     @foreach($users as $user)
                                         <option value="{{ $user->id }}" {{ old('assigned_user_id') == $user->id ? 'selected' : '' }}>
@@ -276,7 +280,10 @@
                             </div>
 
                             <div class="flex items-center justify-between pt-6">
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <button type="submit" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 border border-transparent rounded-xl font-semibold text-sm text-white uppercase tracking-widest hover:from-blue-600 hover:to-purple-700 focus:from-blue-600 focus:to-purple-700 active:from-blue-700 active:to-purple-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
                                     Create Task
                                 </button>
                             </div>

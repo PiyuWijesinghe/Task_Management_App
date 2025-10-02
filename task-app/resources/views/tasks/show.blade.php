@@ -74,6 +74,13 @@
                                 {{ __('Edit Task') }}
                             </a>
                             @endcan
+
+                            @if($task->canBePostponedBy(auth()->user()) && $task->status !== 'Completed')
+                            <button onclick="togglePostponeForm()" 
+                                    class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded transition-colors duration-200">
+                                Postpone
+                            </button>
+                            @endif
                             
                             @can('delete', $task)
                             <form action="{{ route('tasks.destroy', $task) }}" method="POST" class="inline-block" 
@@ -99,6 +106,156 @@
                             </a>
                         </div>
 
+                        <!-- Postpone Form (Hidden by default) -->
+                        @if($task->canBePostponedBy(auth()->user()) && $task->status !== 'Completed')
+                        <div id="postponeForm" class="hidden pt-8 border-t border-gray-200 dark:border-gray-600">
+                            <div class="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 p-6 rounded-xl border border-purple-200 dark:border-purple-700">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    Postpone Task
+                                </h3>
+
+                                @if(session('success'))
+                                    <div class="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
+                                        <div class="flex">
+                                            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-green-800 dark:text-green-200">{{ session('success') }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                @if(session('error'))
+                                    <div class="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
+                                        <div class="flex">
+                                            <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-red-800 dark:text-red-200">{{ session('error') }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <form action="{{ route('tasks.postpone', $task) }}" method="POST" class="space-y-4">
+                                    @csrf
+                                    
+                                    <div>
+                                        <label for="new_due_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            New Due Date *
+                                        </label>
+                                        <input type="date" 
+                                               id="new_due_date" 
+                                               name="new_due_date" 
+                                               value="{{ old('new_due_date') }}"
+                                               min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                                               required
+                                               class="block w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors">
+                                        @error('new_due_date')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="reason" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Reason (Optional)
+                                        </label>
+                                        <textarea id="reason" 
+                                                  name="reason" 
+                                                  rows="3" 
+                                                  maxlength="500"
+                                                  placeholder="Briefly explain why you're postponing this task..."
+                                                  class="block w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors resize-none">{{ old('reason') }}</textarea>
+                                        @error('reason')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    
+                                    <div class="flex items-center space-x-3">
+                                        <button type="submit" 
+                                                class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded transition-colors duration-200">
+                                            Postpone
+                                        </button>
+                                        <button type="button" 
+                                                onclick="togglePostponeForm()" 
+                                                class="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white text-sm font-medium rounded transition-colors duration-200">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        @endif
+
+                        <!-- Postponement History -->
+                        @if($task->postponements->count() > 0)
+                        <div class="pt-8 border-t border-gray-200 dark:border-gray-600">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                </svg>
+                                Postponement History
+                            </h3>
+                            
+                            <div class="bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden shadow-sm">
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                                        <thead class="bg-gray-50 dark:bg-gray-800">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                    Old Due Date
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                    New Due Date
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                    Reason
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                    Postponed By
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                    Date
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
+                                            @foreach($task->postponements as $postponement)
+                                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                    {{ $postponement->old_due_date ? $postponement->old_due_date->format('M d, Y') : 'No date set' }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                    <span class="inline-flex px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full">
+                                                        {{ $postponement->new_due_date->format('M d, Y') }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
+                                                    <div class="max-w-xs">
+                                                        {{ $postponement->reason ?: 'No reason provided' }}
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                    {{ $postponement->postponedBy->name }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                    {{ $postponement->created_at->format('M d, Y g:i A') }}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
                         <!-- Task Metadata -->
                         <div class="text-sm text-gray-500 dark:text-gray-400 pt-4 border-t border-gray-200 dark:border-gray-600">
                             <p>Created: {{ $task->created_at->format('M d, Y \a\t g:i A') }}</p>
@@ -112,4 +269,24 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function togglePostponeForm() {
+            const form = document.getElementById('postponeForm');
+            if (form.classList.contains('hidden')) {
+                form.classList.remove('hidden');
+                // Scroll to form
+                form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                form.classList.add('hidden');
+            }
+        }
+
+        // Auto-show form if there are validation errors
+        @if($errors->has('new_due_date') || $errors->has('reason'))
+            document.addEventListener('DOMContentLoaded', function() {
+                togglePostponeForm();
+            });
+        @endif
+    </script>
 </x-app-layout>

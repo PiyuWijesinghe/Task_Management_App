@@ -28,6 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/tasks/{task}/complete', [TaskController::class, 'markAsCompleted'])->name('tasks.complete');
     Route::get('/tasks-assign', [TaskController::class, 'assignPage'])->name('tasks.assign');
     Route::patch('/tasks/{task}/assign', [TaskController::class, 'assignUser'])->name('tasks.assign.update');
+    Route::post('/tasks/{task}/postpone', [TaskController::class, 'postpone'])->name('tasks.postpone');
+    Route::get('/tasks-postponed', [TaskController::class, 'postponed'])->name('tasks.postponed');
 });
 
 require __DIR__.'/auth.php';

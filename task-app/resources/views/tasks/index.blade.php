@@ -22,8 +22,8 @@
             </div>
 
             <!-- Navigation Menu -->
-            <nav class="mt-6">
-                <div class="px-4">
+            <nav class="mt-6 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
+                <div class="px-4 pb-6">
                     <div class="space-y-1">
                         <!-- Dashboard -->
                         <a href="{{ route('dashboard') }}" class="text-gray-700 dark:text-gray-200 hover:bg-white/50 dark:hover:bg-gray-700/50 hover:scale-105 group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 backdrop-blur-sm">
@@ -261,6 +261,17 @@
                                                 </a>
                                                 @endcan
 
+                                                <!-- Postpone Button -->
+                                                @if($task->canBePostponedBy(auth()->user()) && $task->status !== 'Completed')
+                                                <button onclick="togglePostponeForm('{{ $task->id }}')" 
+                                                        class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                    </svg>
+                                                    📅 Postpone
+                                                </button>
+                                                @endif
+
                                                 <!-- Mark as Completed Button (only show for non-completed tasks) -->
                                                 @if($task->status !== 'Completed')
                                                 <form action="{{ route('tasks.complete', $task) }}" method="POST" class="inline-block" onsubmit="return confirm('Mark this task as completed?')">
@@ -290,6 +301,49 @@
                                                 @endcan
                                             </div>
                                         </div>
+                                        
+                                        <!-- Postpone Form (Hidden by default) -->
+                                        @if($task->canBePostponedBy(auth()->user()) && $task->status !== 'Completed')
+                                        <div id="postponeForm-{{ $task->id }}" class="hidden mt-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
+                                            <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Postpone Task</h4>
+                                            <form action="{{ route('tasks.postpone', $task) }}" method="POST" class="space-y-3">
+                                                @csrf
+                                                <div>
+                                                    <label for="new_due_date_{{ $task->id }}" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                        New Due Date *
+                                                    </label>
+                                                    <input type="date" 
+                                                           id="new_due_date_{{ $task->id }}" 
+                                                           name="new_due_date" 
+                                                           min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                                                           required
+                                                           class="block w-full px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                                                </div>
+                                                <div>
+                                                    <label for="reason_{{ $task->id }}" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                        Reason (Optional)
+                                                    </label>
+                                                    <textarea id="reason_{{ $task->id }}" 
+                                                              name="reason" 
+                                                              rows="2" 
+                                                              maxlength="500"
+                                                              placeholder="Why are you postponing this task?"
+                                                              class="block w-full px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"></textarea>
+                                                </div>
+                                                <div class="flex items-center space-x-2">
+                                                    <button type="submit" 
+                                                            class="px-3 py-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-xs font-medium rounded shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200">
+                                                        📅 Postpone
+                                                    </button>
+                                                    <button type="button" 
+                                                            onclick="togglePostponeForm('{{ $task->id }}')" 
+                                                            class="px-3 py-2 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white text-xs font-medium rounded shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200">
+                                                        ✕ Cancel
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        @endif
                                     </div>
                                 @endforeach
                             </div>
@@ -327,6 +381,17 @@
                     }
                 }, 5000);
             @endif
+        </script>
+
+        <script>
+            function togglePostponeForm(taskId) {
+                const form = document.getElementById('postponeForm-' + taskId);
+                if (form.classList.contains('hidden')) {
+                    form.classList.remove('hidden');
+                } else {
+                    form.classList.add('hidden');
+                }
+            }
         </script>
     </div>
 </x-app-layout>
