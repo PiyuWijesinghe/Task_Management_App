@@ -190,39 +190,108 @@
                                         @endif
                                     </div>
                                     
-                                    @if($task->assigned_user_id)
-                                    <div class="mt-3 flex items-center text-sm text-blue-600 dark:text-blue-400">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                        </svg>
-                                        Currently assigned to: <strong>{{ $task->assignedUser->name }}</strong> ({{ $task->assignedUser->email }})
+                                    @php
+                                        $allAssignees = collect();
+                                        
+                                        // Add single assigned user if exists
+                                        if($task->assigned_user_id && $task->assignedUser) {
+                                            $allAssignees->push($task->assignedUser);
+                                        }
+                                        
+                                        // Add multiple assigned users
+                                        if($task->assignedUsers && $task->assignedUsers->count() > 0) {
+                                            $allAssignees = $allAssignees->merge($task->assignedUsers);
+                                        }
+                                        
+                                        // Remove duplicates based on ID
+                                        $allAssignees = $allAssignees->unique('id');
+                                    @endphp
+                                    
+                                    @if($allAssignees->count() > 0)
+                                    <div class="mt-3 text-sm text-blue-600 dark:text-blue-400">
+                                        <div class="flex items-start">
+                                            <svg class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                            </svg>
+                                            <div>
+                                                <span class="font-medium">Currently assigned to:</span>
+                                                <div class="mt-1 flex flex-wrap gap-2">
+                                                    @foreach($allAssignees as $assignee)
+                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                                                            {{ $assignee->name }}
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     @endif
                                 </div>
 
                                 <!-- Assignment Form -->
                                 <div class="ml-6 min-w-0 flex-shrink-0">
-                                    <form action="{{ route('tasks.assign.update', $task) }}" method="POST" class="flex items-center space-x-3">
+                                    <form action="{{ route('tasks.assign.update', $task) }}" method="POST" class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                                         @csrf
                                         @method('PATCH')
                                         
-                                        <div class="min-w-48">
-                                            <select name="assigned_user_id" class="block w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                                                <option value="">{{ $task->assigned_user_id ? 'Remove assignment' : 'Select user to assign' }}</option>
+                                        <div class="mb-3">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                Assign to Users:
+                                            </label>
+                                            
+                                            <div class="max-h-40 overflow-y-auto space-y-2 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 p-3">
+                                                @php
+                                                    // Get currently assigned user IDs
+                                                    $currentAssignees = collect();
+                                                    if($task->assigned_user_id) {
+                                                        $currentAssignees->push($task->assigned_user_id);
+                                                    }
+                                                    if($task->assignedUsers && $task->assignedUsers->count() > 0) {
+                                                        $currentAssignees = $currentAssignees->merge($task->assignedUsers->pluck('id'));
+                                                    }
+                                                    $currentAssignees = $currentAssignees->unique()->toArray();
+                                                @endphp
+                                                
                                                 @foreach($users as $user)
-                                                    <option value="{{ $user->id }}" {{ $task->assigned_user_id == $user->id ? 'selected' : '' }}>
-                                                        {{ $user->name }} ({{ $user->email }})
-                                                    </option>
+                                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded">
+                                                        <input type="checkbox" 
+                                                               name="assigned_users[]" 
+                                                               value="{{ $user->id }}"
+                                                               {{ in_array($user->id, $currentAssignees) ? 'checked' : '' }}
+                                                               class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 rounded">
+                                                        <div class="ml-3 flex-1">
+                                                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->name }}</span>
+                                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ $user->email }}</div>
+                                                        </div>
+                                                    </label>
                                                 @endforeach
-                                            </select>
+                                                
+                                                @if($users->isEmpty())
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">No other users available</p>
+                                                @endif
+                                            </div>
                                         </div>
                                         
-                                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-sm font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">
-                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                                            </svg>
-                                            Update
-                                        </button>
+                                        <div class="flex space-x-2">
+                                            <button type="submit" class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-sm font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                                </svg>
+                                                Update Assignments
+                                            </button>
+                                            
+                                            @php
+                                                $hasAssignees = !empty($currentAssignees);
+                                            @endphp
+                                            
+                                            @if($hasAssignees)
+                                            <button type="button" 
+                                                    onclick="clearAllAssignments(this.form)"
+                                                    class="px-3 py-2 bg-gray-500 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                                Clear All
+                                            </button>
+                                            @endif
+                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -249,4 +318,17 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function clearAllAssignments(form) {
+            // Uncheck all checkboxes
+            const checkboxes = form.querySelectorAll('input[name="assigned_users[]"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Submit the form
+            form.submit();
+        }
+    </script>
 </x-app-layout>

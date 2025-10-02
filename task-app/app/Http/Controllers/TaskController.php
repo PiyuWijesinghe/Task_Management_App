@@ -21,22 +21,38 @@ class TaskController extends Controller
         
         // Get both created and assigned tasks by status, ordered by due date priority
         $pending = Task::where(function($query) use ($user) {
-            $query->where('user_id', $user->id)->orWhere('assigned_user_id', $user->id);
+            $query->where('user_id', $user->id)
+                  ->orWhere('assigned_user_id', $user->id)
+                  ->orWhereHas('assignedUsers', function($q) use ($user) {
+                      $q->where('user_id', $user->id);
+                  });
         })->where('status', 'Pending')
+        ->with(['assignedUsers', 'assignedUser'])
         ->orderByRaw('CASE WHEN due_date IS NULL THEN 1 ELSE 0 END')
         ->orderBy('due_date', 'asc')
         ->orderBy('created_at', 'desc')->get();
         
         $inProgress = Task::where(function($query) use ($user) {
-            $query->where('user_id', $user->id)->orWhere('assigned_user_id', $user->id);
+            $query->where('user_id', $user->id)
+                  ->orWhere('assigned_user_id', $user->id)
+                  ->orWhereHas('assignedUsers', function($q) use ($user) {
+                      $q->where('user_id', $user->id);
+                  });
         })->where('status', 'In Progress')
+        ->with(['assignedUsers', 'assignedUser'])
         ->orderByRaw('CASE WHEN due_date IS NULL THEN 1 ELSE 0 END')
         ->orderBy('due_date', 'asc')
         ->orderBy('created_at', 'desc')->get();
         
         $completed = Task::where(function($query) use ($user) {
-            $query->where('user_id', $user->id)->orWhere('assigned_user_id', $user->id);
-        })->where('status', 'Completed')->orderBy('created_at', 'desc')->get();
+            $query->where('user_id', $user->id)
+                  ->orWhere('assigned_user_id', $user->id)
+                  ->orWhereHas('assignedUsers', function($q) use ($user) {
+                      $q->where('user_id', $user->id);
+                  });
+        })->where('status', 'Completed')
+        ->with(['assignedUsers', 'assignedUser'])
+        ->orderBy('created_at', 'desc')->get();
         
         // If filtering by status (from sidebar links)
         if ($request->has('status')) {
@@ -96,7 +112,7 @@ class TaskController extends Controller
         $this->authorize('view', $task);
         
         // Load postponements with related data
-        $task->load(['postponements.postponedBy']);
+        $task->load(['postponements.postponedBy', 'assignedUsers', 'assignedUser']);
         
         return view('tasks.show', compact('task'));
     }
@@ -165,6 +181,7 @@ class TaskController extends Controller
         
         // Get all tasks created by the current user (not assigned tasks)
         $tasks = Task::where('user_id', $user->id)
+            ->with(['assignedUsers', 'assignedUser'])
             ->orderByRaw('CASE WHEN due_date IS NULL THEN 1 ELSE 0 END')
             ->orderBy('due_date', 'asc')
             ->orderBy('created_at', 'desc')
@@ -177,23 +194,30 @@ class TaskController extends Controller
     }
 
     /**
-     * Assign a user to a task.
+     * Assign multiple users to a task.
      */
     public function assignUser(Request $request, Task $task)
     {
         $this->authorize('update', $task);
         
         $validated = $request->validate([
-            'assigned_user_id' => 'nullable|exists:users,id',
+            'assigned_users' => 'nullable|array',
+            'assigned_users.*' => 'exists:users,id',
         ]);
         
-        $task->update($validated);
-        
-        if ($validated['assigned_user_id']) {
-            $assignedUser = User::find($validated['assigned_user_id']);
-            return redirect()->back()->with('success', 'Task "' . $task->title . '" assigned to ' . $assignedUser->name . ' successfully!');
+        // Sync the many-to-many relationship
+        if (isset($validated['assigned_users']) && !empty($validated['assigned_users'])) {
+            $task->assignedUsers()->sync($validated['assigned_users']);
+            
+            // Get names of assigned users for success message
+            $assignedUserNames = User::whereIn('id', $validated['assigned_users'])->pluck('name')->toArray();
+            $userNames = implode(', ', $assignedUserNames);
+            
+            return redirect()->back()->with('success', 'Task "' . $task->title . '" assigned to ' . $userNames . ' successfully!');
         } else {
-            return redirect()->back()->with('success', 'Task "' . $task->title . '" assignment removed successfully!');
+            // Remove all assignments
+            $task->assignedUsers()->detach();
+            return redirect()->back()->with('success', 'All assignments removed from task "' . $task->title . '" successfully!');
         }
     }
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Task extends Model
 {
@@ -35,6 +36,14 @@ class Task extends Model
     public function assignedUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_user_id');
+    }
+
+    /**
+     * Get all users assigned to this task (many-to-many).
+     */
+    public function assignedUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)->withTimestamps();
     }
 
     /**
@@ -70,6 +79,8 @@ class Task extends Model
      */
     public function canBePostponedBy(User $user): bool
     {
-        return $this->user_id === $user->id || $this->assigned_user_id === $user->id;
+        return $this->user_id === $user->id || 
+               $this->assigned_user_id === $user->id ||
+               $this->assignedUsers()->where('user_id', $user->id)->exists();
     }
 }

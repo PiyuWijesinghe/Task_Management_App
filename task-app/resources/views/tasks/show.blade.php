@@ -54,12 +54,40 @@
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Assigned To</h3>
-                                <p class="text-gray-600 dark:text-gray-400">
-                                    {{ $task->assignedUser ? $task->assignedUser->name : 'Not assigned' }}
-                                    @if($task->assigned_user_id === auth()->id() && $task->user_id !== auth()->id())
-                                        <span class="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded-full">You (View Only)</span>
+                                <div class="text-gray-600 dark:text-gray-400">
+                                    @php
+                                        $allAssignees = collect();
+                                        
+                                        // Add single assigned user if exists
+                                        if($task->assigned_user_id && $task->assignedUser) {
+                                            $allAssignees->push($task->assignedUser);
+                                        }
+                                        
+                                        // Add multiple assigned users
+                                        if($task->assignedUsers && $task->assignedUsers->count() > 0) {
+                                            $allAssignees = $allAssignees->merge($task->assignedUsers);
+                                        }
+                                        
+                                        // Remove duplicates based on ID
+                                        $allAssignees = $allAssignees->unique('id');
+                                        $isCurrentUserAssigned = $allAssignees->contains('id', auth()->id());
+                                    @endphp
+                                    
+                                    @if($allAssignees->count() > 0)
+                                        <div class="flex flex-wrap gap-2 items-center">
+                                            @foreach($allAssignees as $assignee)
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                                                    {{ $assignee->name }}
+                                                    @if($assignee->id === auth()->id() && $task->user_id !== auth()->id())
+                                                        <span class="ml-1 text-xs">(You - View Only)</span>
+                                                    @endif
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <span>Not assigned</span>
                                     @endif
-                                </p>
+                                </div>
                             </div>
                         </div>
 

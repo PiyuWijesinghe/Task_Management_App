@@ -520,13 +520,39 @@
                                                                 </svg>
                                                                 Created {{ $task->created_at->diffForHumans() }}
                                                             </span>
-                                                            @if($task->assigned_user_id && $task->assigned_user_id !== Auth::id())
-                                                            <span class="flex items-center text-purple-600 dark:text-purple-400">
-                                                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            @php
+                                                                $allAssignees = collect();
+                                                                
+                                                                // Add single assigned user if exists
+                                                                if($task->assigned_user_id && $task->assignedUser) {
+                                                                    $allAssignees->push($task->assignedUser);
+                                                                }
+                                                                
+                                                                // Add multiple assigned users
+                                                                if($task->assignedUsers && $task->assignedUsers->count() > 0) {
+                                                                    $allAssignees = $allAssignees->merge($task->assignedUsers);
+                                                                }
+                                                                
+                                                                // Remove duplicates and filter out current user
+                                                                $allAssignees = $allAssignees->unique('id')->where('id', '!=', Auth::id());
+                                                            @endphp
+                                                            
+                                                            @if($allAssignees->count() > 0)
+                                                            <div class="flex items-start text-purple-600 dark:text-purple-400">
+                                                                <svg class="w-3 h-3 mr-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                                                 </svg>
-                                                                Assigned to {{ $task->assignedUser->name }}
-                                                            </span>
+                                                                <div>
+                                                                    <span>Assigned to: </span>
+                                                                    <div class="flex flex-wrap gap-1 mt-1">
+                                                                        @foreach($allAssignees as $assignee)
+                                                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400">
+                                                                                {{ $assignee->name }}
+                                                                            </span>
+                                                                        @endforeach
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                             @elseif($task->user_id !== Auth::id())
                                                             <span class="flex items-center text-blue-600 dark:text-blue-400">
                                                                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
