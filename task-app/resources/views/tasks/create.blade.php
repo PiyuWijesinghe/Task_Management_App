@@ -238,17 +238,17 @@
                             <div class="space-y-2">
                                 <label for="status" class="flex items-center text-sm font-semibold text-gray-900 dark:text-white">
                                     <div class="w-4 h-4 mr-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
-                                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                     </div>
                                     Status
                                 </label>
                                 <select id="status" name="status" 
-                                    class="block w-full px-4 py-3 bg-gradient-to-r from-emerald-100 via-teal-100 to-cyan-100 dark:from-emerald-800/50 dark:via-teal-800/50 dark:to-cyan-800/50 backdrop-blur-sm border-2 border-emerald-400 dark:border-emerald-500/60 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 hover:shadow-xl hover:from-emerald-200 hover:via-teal-200 hover:to-cyan-200 dark:hover:from-emerald-700/60 dark:hover:via-teal-700/60 dark:hover:to-cyan-700/60 hover:scale-[1.02]">
-                                    <option value="Pending" {{ old('status') == 'Pending' ? 'selected' : '' }}>🔴 Pending</option>
-                                    <option value="In Progress" {{ old('status') == 'In Progress' ? 'selected' : '' }}>🟡 In Progress</option>
-                                    <option value="Completed" {{ old('status') == 'Completed' ? 'selected' : '' }}>🟢 Completed</option>
+                                    class="block w-full px-4 py-3 bg-emerald-50 dark:bg-emerald-900/30 backdrop-blur-sm border-2 border-emerald-300 dark:border-emerald-600 rounded-xl text-gray-900 dark:text-red focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 hover:shadow-xl hover:bg-emerald-100 dark:hover:bg-emerald-800/40 hover:scale-[1.02] appearance-none bg-no-repeat bg-right pr-10" style="background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 4 5%22><path fill=%22%23667eea%22 d=%22M2 0L0 2h4zm0 5L0 3h4z%22/></svg>'); background-size: 12px; background-position: calc(100% - 12px) center;">
+                                    <option value="Pending" {{ old('status') == 'Pending' ? 'selected' : '' }} class="bg-red-50 text-gray-900">🔴 Pending</option>
+                                    <option value="In Progress" {{ old('status') == 'In Progress' ? 'selected' : '' }} class="bg-yellow-50 text-gray-900">🟡 In Progress</option>
+                                    <option value="Completed" {{ old('status') == 'Completed' ? 'selected' : '' }} class="bg-green-50 text-gray-900">🟢 Completed</option>
                                 </select>
                                 @error('status')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -259,17 +259,17 @@
                             <div class="space-y-2">
                                 <label for="priority" class="flex items-center text-sm font-semibold text-gray-900 dark:text-white">
                                     <div class="w-4 h-4 mr-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-                                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                                         </svg>
                                     </div>
                                     Priority Level
                                 </label>
                                 <select id="priority" name="priority" 
-                                    class="block w-full px-4 py-3 bg-gradient-to-r from-orange-100 via-red-100 to-pink-100 dark:from-orange-800/50 dark:via-red-800/50 dark:to-pink-800/50 backdrop-blur-sm border-2 border-orange-400 dark:border-orange-500/60 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 hover:shadow-xl hover:from-orange-200 hover:via-red-200 hover:to-pink-200 dark:hover:from-orange-700/60 dark:hover:via-red-700/60 dark:hover:to-pink-700/60 hover:scale-[1.02]">
-                                    <option value="High" {{ old('priority') == 'High' ? 'selected' : '' }}>🔥 High Priority</option>
-                                    <option value="Medium" {{ old('priority', 'Medium') == 'Medium' ? 'selected' : '' }}>⚡ Medium Priority</option>
-                                    <option value="Low" {{ old('priority') == 'Low' ? 'selected' : '' }}>🟢 Low Priority</option>
+                                    class="block w-full px-4 py-3 bg-orange-50 dark:bg-orange-900/30 backdrop-blur-sm border-2 border-orange-300 dark:border-orange-600 rounded-xl text-gray-900 dark:text-red-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 hover:shadow-xl hover:bg-orange-100 dark:hover:bg-orange-800/40 hover:scale-[1.02] appearance-none bg-no-repeat bg-right pr-10" style="background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 4 5%22><path fill=%22%23f97316%22 d=%22M2 0L0 2h4zm0 5L0 3h4z%22/></svg>'); background-size: 12px; background-position: calc(100% - 12px) center;">
+                                    <option value="High" {{ old('priority') == 'High' ? 'selected' : '' }} class="bg-red-50 text-gray-900">🔥 High Priority</option>
+                                    <option value="Medium" {{ old('priority', 'Medium') == 'Medium' ? 'selected' : '' }} class="bg-yellow-50 text-gray-900">⚡ Medium Priority</option>
+                                    <option value="Low" {{ old('priority') == 'Low' ? 'selected' : '' }} class="bg-green-50 text-gray-900">🟢 Low Priority</option>
                                 </select>
                                 @error('priority')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
