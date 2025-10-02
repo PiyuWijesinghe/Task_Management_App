@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\User;
+use App\Models\Postponement;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -92,8 +93,12 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-    $this->authorize('view', $task);
-    return view('tasks.show', compact('task'));
+        $this->authorize('view', $task);
+        
+        // Load postponements with related data
+        $task->load(['postponements.postponedBy']);
+        
+        return view('tasks.show', compact('task'));
     }
 
     /**
@@ -190,5 +195,52 @@ class TaskController extends Controller
         } else {
             return redirect()->back()->with('success', 'Task "' . $task->title . '" assignment removed successfully!');
         }
+    }
+
+    /**
+     * Postpone a task by updating its due date.
+     */
+    public function postpone(Request $request, Task $task)
+    {
+        // Check if user can postpone this task
+        if (!$task->canBePostponedBy(auth()->user())) {
+            return redirect()->back()->with('error', 'You are not authorized to postpone this task.');
+        }
+
+        // Validate the input
+        $validated = $request->validate([
+            'new_due_date' => 'required|date|after:today',
+            'reason' => 'nullable|string|max:500',
+        ], [
+            'new_due_date.required' => 'Please select a new due date.',
+            'new_due_date.after' => 'The new due date must be in the future.',
+        ]);
+
+        // Store the old due date
+        $oldDueDate = $task->due_date;
+
+        // Create postponement record
+        Postponement::create([
+            'task_id' => $task->id,
+            'old_due_date' => $oldDueDate,
+            'new_due_date' => $validated['new_due_date'],
+            'reason' => $validated['reason'],
+            'postponed_by' => auth()->id(),
+        ]);
+
+        // Update the task's due date
+        $task->update([
+            'due_date' => $validated['new_due_date'],
+        ]);
+
+        return redirect()->back()->with('success', 'Task "' . $task->title . '" has been postponed successfully!');
+    }
+
+    /**
+     * Display postponed tasks.
+     */
+    public function postponed()
+    {
+        return view('tasks.postponed');
     }
 }

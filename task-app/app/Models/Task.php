@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Task extends Model
 {
@@ -54,5 +55,21 @@ class Task extends Model
         return $this->due_date && 
                $this->due_date->isToday() && 
                $this->status !== 'Completed';
+    }
+
+    /**
+     * Get the postponements for the task.
+     */
+    public function postponements(): HasMany
+    {
+        return $this->hasMany(Postponement::class)->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Check if the current user can postpone this task.
+     */
+    public function canBePostponedBy(User $user): bool
+    {
+        return $this->user_id === $user->id || $this->assigned_user_id === $user->id;
     }
 }
