@@ -95,12 +95,30 @@ class TaskController extends Controller
             'description' => 'nullable|string',
             'due_date' => 'nullable|date|after_or_equal:today',
             'status' => 'required|in:Pending,In Progress,Completed',
-            'assigned_user_id' => 'nullable|exists:users,id',
+            'assigned_users' => 'nullable|array',
+            'assigned_users.*' => 'exists:users,id',
         ], [
             'due_date.after_or_equal' => 'Due date cannot be in the past. Please select today or a future date.',
         ]);
         $validated['user_id'] = auth()->id();
+        
+        // Remove assigned_users from validated data for task creation
+        $assignedUsers = $validated['assigned_users'] ?? [];
+        unset($validated['assigned_users']);
+        
         $task = Task::create($validated);
+        
+        // Assign multiple users if provided
+        if (!empty($assignedUsers)) {
+            $task->assignedUsers()->sync($assignedUsers);
+            
+            // Get names of assigned users for success message
+            $assignedUserNames = User::whereIn('id', $assignedUsers)->pluck('name')->toArray();
+            $userNames = implode(', ', $assignedUserNames);
+            
+            return redirect()->route('dashboard')->with('success', 'Task "' . $task->title . '" created successfully and assigned to ' . $userNames . '!');
+        }
+        
         return redirect()->route('dashboard')->with('success', 'Task "' . $task->title . '" created successfully and added to your dashboard!');
     }
 

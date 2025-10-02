@@ -266,52 +266,71 @@
                                     Assign to Users (Optional)
                                 </label>
                                 
-                                <div class="bg-gradient-to-r from-rose-100 via-pink-100 to-violet-100 dark:from-rose-800/50 dark:via-pink-800/50 dark:to-violet-800/50 backdrop-blur-sm border-2 border-rose-400 dark:border-rose-500/60 rounded-xl p-4 transition-all duration-300 hover:shadow-xl hover:from-rose-200 hover:via-pink-200 hover:to-violet-200 dark:hover:from-rose-700/60 dark:hover:via-pink-700/60 dark:hover:to-violet-700/60">
-                                    @if($users->count() > 0)
-                                        <div class="space-y-3 max-h-48 overflow-y-auto">
-                                            <div class="flex items-center p-2 hover:bg-white/30 dark:hover:bg-gray-800/30 rounded-lg transition-colors">
-                                                <input type="checkbox" 
-                                                       id="keep_self" 
-                                                       class="h-4 w-4 text-rose-600 focus:ring-rose-500 border-gray-300 dark:border-gray-600 rounded"
-                                                       onchange="toggleSelfAssignment(this)">
-                                                <label for="keep_self" class="ml-3 flex-1 cursor-pointer">
-                                                    <span class="text-sm font-medium text-gray-900 dark:text-white">👤 Keep task for myself</span>
+                                <div class="bg-gradient-to-r from-rose-100 via-pink-100 to-violet-100 dark:from-rose-800/50 dark:via-pink-800/50 dark:to-violet-800/50 backdrop-blur-sm border-2 border-rose-400 dark:border-rose-500/60 rounded-xl transition-all duration-300 hover:shadow-xl hover:from-rose-200 hover:via-pink-200 hover:to-violet-200 dark:hover:from-rose-700/60 dark:hover:via-pink-700/60 dark:hover:to-violet-700/60">
+                                    
+                                    <!-- Dropdown header/trigger -->
+                                    <button type="button" id="dropdown-trigger" class="w-full px-4 py-3 flex items-center justify-between hover:bg-white/10 dark:hover:bg-gray-800/10 rounded-t-xl transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500">
+                                        <div class="flex items-center">
+                                            <span class="text-sm font-medium text-gray-900 dark:text-white">👥 Select Users to Assign</span>
+                                            <span id="selected-count" class="ml-2 px-2 py-1 text-xs bg-rose-200 dark:bg-rose-700 text-rose-800 dark:text-rose-200 rounded-full hidden">0 selected</span>
+                                        </div>
+                                        <svg id="dropdown-arrow" class="w-5 h-5 text-gray-600 dark:text-gray-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </button>
+                                    
+                                    <!-- Dropdown content -->
+                                    <div id="user-dropdown-content" class="hidden border-t border-white/20 dark:border-gray-600/20">
+                                        @if($users->count() > 0)
+                                            <!-- Keep for myself option -->
+                                            <div class="px-4 py-2 border-b border-white/10 dark:border-gray-600/10">
+                                                <label class="flex items-center p-2 hover:bg-white/30 dark:hover:bg-gray-800/30 rounded-lg transition-colors cursor-pointer">
+                                                    <input type="checkbox" 
+                                                           id="keep_self" 
+                                                           class="h-4 w-4 text-rose-600 focus:ring-rose-500 border-gray-300 dark:border-gray-600 rounded">
+                                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-white">👤 Keep task for myself</span>
                                                 </label>
                                             </div>
                                             
-                                            <div class="border-t border-white/20 dark:border-gray-600/20 pt-3">
-                                                <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">Or assign to team members:</p>
-                                                @foreach($users as $user)
-                                                    @php
-                                                        $oldAssignedUsers = old('assigned_users', []);
-                                                    @endphp
-                                                    <div class="flex items-center p-2 hover:bg-white/30 dark:hover:bg-gray-800/30 rounded-lg transition-colors">
-                                                        <input type="checkbox" 
-                                                               name="assigned_users[]" 
-                                                               value="{{ $user->id }}"
-                                                               id="user_{{ $user->id }}"
-                                                               {{ in_array($user->id, $oldAssignedUsers) ? 'checked' : '' }}
-                                                               class="h-4 w-4 text-rose-600 focus:ring-rose-500 border-gray-300 dark:border-gray-600 rounded user-checkbox">
-                                                        <label for="user_{{ $user->id }}" class="ml-3 flex-1 cursor-pointer">
-                                                            <span class="text-sm font-medium text-gray-900 dark:text-white">🎯 {{ $user->name }}</span>
-                                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ $user->email }}</div>
+                                            <!-- Users list with scrolling -->
+                                            <div class="px-4 py-2">
+                                                <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 px-2">Or assign to team members:</p>
+                                                <div class="max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-rose-300 dark:scrollbar-thumb-rose-600 scrollbar-track-transparent hover:scrollbar-thumb-rose-400 dark:hover:scrollbar-thumb-rose-500 space-y-1">
+                                                    @foreach($users as $user)
+                                                        @php
+                                                            $oldAssignedUsers = old('assigned_users', []);
+                                                        @endphp
+                                                        <label class="flex items-center p-2 hover:bg-white/30 dark:hover:bg-gray-800/30 rounded-lg transition-colors cursor-pointer">
+                                                            <input type="checkbox" 
+                                                                   name="assigned_users[]" 
+                                                                   value="{{ $user->id }}"
+                                                                   id="user_{{ $user->id }}"
+                                                                   {{ in_array($user->id, $oldAssignedUsers) ? 'checked' : '' }}
+                                                                   class="h-4 w-4 text-rose-600 focus:ring-rose-500 border-gray-300 dark:border-gray-600 rounded user-checkbox">
+                                                            <div class="ml-3 flex-1">
+                                                                <span class="text-sm font-medium text-gray-900 dark:text-white">🎯 {{ $user->name }}</span>
+                                                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ $user->email }}</div>
+                                                            </div>
                                                         </label>
-                                                    </div>
-                                                @endforeach
+                                                    @endforeach
+                                                </div>
                                             </div>
-                                        </div>
-                                        
-                                        <div class="mt-3 pt-3 border-t border-white/20 dark:border-gray-600/20 flex space-x-2">
-                                            <button type="button" onclick="selectAllUsers()" class="px-3 py-1 text-xs bg-rose-200 hover:bg-rose-300 dark:bg-rose-700 dark:hover:bg-rose-600 text-rose-800 dark:text-rose-200 rounded-lg transition-colors">
-                                                Select All
-                                            </button>
-                                            <button type="button" onclick="clearAllUsers()" class="px-3 py-1 text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg transition-colors">
-                                                Clear All
-                                            </button>
-                                        </div>
-                                    @else
-                                        <p class="text-sm text-gray-600 dark:text-gray-400 text-center py-4">No other users available to assign</p>
-                                    @endif
+                                            
+                                            <!-- Action buttons -->
+                                            <div class="px-4 py-3 bg-white/20 dark:bg-gray-800/20 border-t border-white/20 dark:border-gray-600/20 flex space-x-2 rounded-b-xl">
+                                                <button type="button" id="select-all-btn" class="flex-1 px-3 py-2 text-xs bg-rose-200 hover:bg-rose-300 dark:bg-rose-700 dark:hover:bg-rose-600 text-rose-800 dark:text-rose-200 rounded-lg transition-colors font-medium">
+                                                    ✓ Select All
+                                                </button>
+                                                <button type="button" id="clear-all-btn" class="flex-1 px-3 py-2 text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg transition-colors font-medium">
+                                                    ✕ Clear All
+                                                </button>
+                                            </div>
+                                        @else
+                                            <div class="px-4 py-6">
+                                                <p class="text-sm text-gray-600 dark:text-gray-400 text-center">No other users available to assign</p>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                                 
                                 @error('assigned_users')
@@ -338,50 +357,117 @@
     </div>
 
     <script>
-        function toggleSelfAssignment(selfCheckbox) {
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownTrigger = document.getElementById('dropdown-trigger');
+            const dropdownContent = document.getElementById('user-dropdown-content');
+            const dropdownArrow = document.getElementById('dropdown-arrow');
+            const selectedCount = document.getElementById('selected-count');
+            const selfCheckbox = document.getElementById('keep_self');
             const userCheckboxes = document.querySelectorAll('.user-checkbox');
-            
-            if (selfCheckbox.checked) {
-                // Uncheck all user checkboxes if "keep for myself" is checked
+            const selectAllBtn = document.getElementById('select-all-btn');
+            const clearAllBtn = document.getElementById('clear-all-btn');
+
+            // Toggle dropdown function
+            function toggleDropdown() {
+                if (dropdownContent && dropdownArrow) {
+                    if (dropdownContent.classList.contains('hidden')) {
+                        dropdownContent.classList.remove('hidden');
+                        dropdownArrow.classList.add('rotate-180');
+                    } else {
+                        dropdownContent.classList.add('hidden');
+                        dropdownArrow.classList.remove('rotate-180');
+                    }
+                }
+            }
+
+            // Update selected count display
+            function updateSelectedCount() {
+                if (!selectedCount) return;
+                
+                const checkedUsers = document.querySelectorAll('.user-checkbox:checked');
+                let count = checkedUsers.length;
+                
+                if (selfCheckbox && selfCheckbox.checked) {
+                    selectedCount.textContent = 'Assigned to me';
+                    selectedCount.classList.remove('hidden');
+                } else if (count > 0) {
+                    selectedCount.textContent = `${count} user${count > 1 ? 's' : ''} selected`;
+                    selectedCount.classList.remove('hidden');
+                } else {
+                    selectedCount.classList.add('hidden');
+                }
+            }
+
+            // Handle self assignment toggle
+            function handleSelfAssignment() {
+                if (selfCheckbox && selfCheckbox.checked) {
+                    userCheckboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                }
+                updateSelectedCount();
+            }
+
+            // Select all users
+            function selectAllUsers() {
+                if (selfCheckbox) selfCheckbox.checked = false;
+                userCheckboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+                updateSelectedCount();
+            }
+
+            // Clear all selections
+            function clearAllUsers() {
+                if (selfCheckbox) selfCheckbox.checked = false;
                 userCheckboxes.forEach(checkbox => {
                     checkbox.checked = false;
                 });
+                updateSelectedCount();
             }
-        }
 
-        function selectAllUsers() {
-            const userCheckboxes = document.querySelectorAll('.user-checkbox');
-            const selfCheckbox = document.getElementById('keep_self');
-            
-            // Uncheck "keep for myself"
-            selfCheckbox.checked = false;
-            
-            // Check all user checkboxes
-            userCheckboxes.forEach(checkbox => {
-                checkbox.checked = true;
-            });
-        }
+            // Event listeners
+            if (dropdownTrigger) {
+                dropdownTrigger.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleDropdown();
+                });
+            }
 
-        function clearAllUsers() {
-            const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
-            allCheckboxes.forEach(checkbox => {
-                checkbox.checked = false;
-            });
-        }
+            if (selfCheckbox) {
+                selfCheckbox.addEventListener('change', handleSelfAssignment);
+            }
 
-        // Handle user checkbox clicks
-        document.addEventListener('DOMContentLoaded', function() {
-            const userCheckboxes = document.querySelectorAll('.user-checkbox');
-            const selfCheckbox = document.getElementById('keep_self');
-            
             userCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
-                    if (this.checked) {
-                        // Uncheck "keep for myself" if any user is selected
+                    if (this.checked && selfCheckbox) {
                         selfCheckbox.checked = false;
                     }
+                    updateSelectedCount();
                 });
             });
+
+            if (selectAllBtn) {
+                selectAllBtn.addEventListener('click', selectAllUsers);
+            }
+
+            if (clearAllBtn) {
+                clearAllBtn.addEventListener('click', clearAllUsers);
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const dropdownContainer = dropdownTrigger ? dropdownTrigger.closest('.bg-gradient-to-r') : null;
+                if (dropdownContainer && !dropdownContainer.contains(event.target)) {
+                    if (dropdownContent) dropdownContent.classList.add('hidden');
+                    if (dropdownArrow) dropdownArrow.classList.remove('rotate-180');
+                }
+            });
+
+            // Initialize
+            updateSelectedCount();
+            if (dropdownContent) dropdownContent.classList.add('hidden');
         });
     </script>
 </x-app-layout>
