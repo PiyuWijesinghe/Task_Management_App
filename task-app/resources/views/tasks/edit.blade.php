@@ -93,6 +93,23 @@
                                 @enderror
                             </div>
 
+                            <!-- Priority -->
+                            <div class="space-y-2">
+                                <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Priority
+                                </label>
+                                <select id="priority" 
+                                        name="priority"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="Low" {{ old('priority', $task->priority) == 'Low' ? 'selected' : '' }}>🟢 Low Priority</option>
+                                    <option value="Medium" {{ old('priority', $task->priority) == 'Medium' ? 'selected' : '' }}>🟡 Medium Priority</option>
+                                    <option value="High" {{ old('priority', $task->priority) == 'High' ? 'selected' : '' }}>🔴 High Priority</option>
+                                </select>
+                                @error('priority')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <!-- Assign to User -->
                             <div class="space-y-2">
                                 <label for="assigned_user_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">

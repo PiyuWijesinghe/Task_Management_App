@@ -364,6 +364,11 @@
                                                 <span class="px-3 py-1 text-xs font-semibold rounded-full shadow-md {{ $task->status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : ($task->status === 'In Progress' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white') }}">
                                                     {{ $task->status }}
                                                 </span>
+                                                <!-- Priority Badge -->
+                                                <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full shadow-md {{ $task->getPriorityBadgeClasses() }}">
+                                                    {!! $task->getPriorityIcon() !!}
+                                                    {{ $task->getPriorityText() }}
+                                                </span>
                                                 
                                                 <!-- View Details Button -->
                                                 <a href="{{ route('tasks.show', $task) }}" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">

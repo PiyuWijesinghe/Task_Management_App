@@ -255,6 +255,27 @@
                                 @enderror
                             </div>
 
+                            <!-- Priority -->
+                            <div class="space-y-2">
+                                <label for="priority" class="flex items-center text-sm font-semibold text-gray-900 dark:text-white">
+                                    <div class="w-4 h-4 mr-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+                                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                    </div>
+                                    Priority Level
+                                </label>
+                                <select id="priority" name="priority" 
+                                    class="block w-full px-4 py-3 bg-gradient-to-r from-orange-100 via-red-100 to-pink-100 dark:from-orange-800/50 dark:via-red-800/50 dark:to-pink-800/50 backdrop-blur-sm border-2 border-orange-400 dark:border-orange-500/60 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 hover:shadow-xl hover:from-orange-200 hover:via-red-200 hover:to-pink-200 dark:hover:from-orange-700/60 dark:hover:via-red-700/60 dark:hover:to-pink-700/60 hover:scale-[1.02]">
+                                    <option value="High" {{ old('priority') == 'High' ? 'selected' : '' }}>🔥 High Priority</option>
+                                    <option value="Medium" {{ old('priority', 'Medium') == 'Medium' ? 'selected' : '' }}>⚡ Medium Priority</option>
+                                    <option value="Low" {{ old('priority') == 'Low' ? 'selected' : '' }}>🟢 Low Priority</option>
+                                </select>
+                                @error('priority')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <!-- Assign to Users -->
                             <div class="space-y-2">
                                 <label class="flex items-center text-sm font-semibold text-gray-900 dark:text-white">

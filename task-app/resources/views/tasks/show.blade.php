@@ -1,5 +1,16 @@
 <x-app-layout>
-    <div class="flex h-screen bg-transparent">
+    <div class="flex h-screen b                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Priority</h3>
+                                <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full {{ $task->getPriorityBadgeClasses() }}">
+                                    {!! $task->getPriorityIcon() !!}
+                                    {{ $task->getPriorityText() }}
+                                </span>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Created By</h3>
+                                <p class="text-gray-600 dark:text-gray-400">
+                                    {{ $task->user->name }}</p>nsparent">
         <!-- Sidebar -->
         <x-sidebar />
 

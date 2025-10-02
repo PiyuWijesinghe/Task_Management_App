@@ -160,6 +160,10 @@
                                         <span class="px-2 py-1 text-xs font-medium rounded-full {{ $task->status === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' : ($task->status === 'In Progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400' : 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400') }}">
                                             {{ $task->status }}
                                         </span>
+                                        <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full {{ $task->getPriorityBadgeClasses() }}">
+                                            {!! $task->getPriorityIcon() !!}
+                                            {{ $task->getPriorityText() }}
+                                        </span>
                                     </div>
                                     
                                     @if($task->description)

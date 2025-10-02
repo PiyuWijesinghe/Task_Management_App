@@ -95,6 +95,7 @@ class TaskController extends Controller
             'description' => 'nullable|string',
             'due_date' => 'nullable|date|after_or_equal:today',
             'status' => 'required|in:Pending,In Progress,Completed',
+            'priority' => 'required|in:High,Medium,Low',
             'assigned_users' => 'nullable|array',
             'assigned_users.*' => 'exists:users,id',
         ], [
@@ -156,6 +157,7 @@ class TaskController extends Controller
             'description' => 'nullable|string',
             'due_date' => 'nullable|date|after_or_equal:today',
             'status' => 'required|in:Pending,In Progress,Completed',
+            'priority' => 'required|in:High,Medium,Low',
             'assigned_user_id' => 'nullable|exists:users,id',
         ], [
             'due_date.after_or_equal' => 'Due date cannot be in the past. Please select today or a future date.',

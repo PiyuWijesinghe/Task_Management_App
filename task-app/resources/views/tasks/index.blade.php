@@ -247,10 +247,16 @@
                                                 </div>
                                             </div>
                                             <div class="flex items-center space-x-3 ml-6">
+                                                <!-- Priority Badge -->
+                                                <span class="px-2 py-1 text-xs font-medium rounded-full border shadow-sm {{ $task->getPriorityBadgeClasses() }}">
+                                                    {{ $task->getPriorityText() }}
+                                                </span>
+                                                
                                                 <!-- Status Badge -->
                                                 <span class="px-3 py-1 text-xs font-semibold rounded-full shadow-md {{ $task->status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : ($task->status === 'In Progress' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white') }}">
                                                     {{ $task->status }}
                                                 </span>
+                                                
                                                 <!-- Edit Button (only for task creator) -->
                                                 @can('update', $task)
                                                 <a href="{{ route('tasks.edit', $task) }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">

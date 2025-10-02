@@ -14,6 +14,7 @@ class Task extends Model
         'description', 
         'due_date',
         'status',
+        'priority',
         'user_id',
         'assigned_user_id',
     ];
@@ -82,5 +83,52 @@ class Task extends Model
         return $this->user_id === $user->id || 
                $this->assigned_user_id === $user->id ||
                $this->assignedUsers()->where('user_id', $user->id)->exists();
+    }
+
+    /**
+     * Get priority badge classes for styling.
+     */
+    public function getPriorityBadgeClasses(): string
+    {
+        return match($this->priority) {
+            'High' => 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400 border-red-200 dark:border-red-800',
+            'Medium' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800',
+            'Low' => 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 border-green-200 dark:border-green-800',
+            default => 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400 border-gray-200 dark:border-gray-800',
+        };
+    }
+
+    /**
+     * Get priority icon for display.
+     */
+    public function getPriorityIcon(): string
+    {
+        return match($this->priority) {
+            'High' => '🔥',
+            'Medium' => '⚡',
+            'Low' => '🟢',
+            default => '⚪',
+        };
+    }
+
+    /**
+     * Get priority text with icon.
+     */
+    public function getPriorityText(): string
+    {
+        return $this->getPriorityIcon() . ' ' . $this->priority;
+    }
+
+    /**
+     * Get priority sort order for queries.
+     */
+    public function getPrioritySortOrder(): int
+    {
+        return match($this->priority) {
+            'High' => 1,
+            'Medium' => 2,
+            'Low' => 3,
+            default => 4,
+        };
     }
 }

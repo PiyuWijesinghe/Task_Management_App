@@ -436,9 +436,14 @@
                                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ $task->created_at->diffForHumans() }}</p>
                                         </div>
                                     </div>
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full shadow-md {{ $task->status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : ($task->status === 'In Progress' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white') }}">
-                                        {{ $task->status }}
-                                    </span>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="px-2 py-1 text-xs font-medium rounded-full border shadow-sm {{ $task->getPriorityBadgeClasses() }}">
+                                            {{ $task->getPriorityText() }}
+                                        </span>
+                                        <span class="px-3 py-1 text-xs font-semibold rounded-full shadow-md {{ $task->status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : ($task->status === 'In Progress' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white') }}">
+                                            {{ $task->status }}
+                                        </span>
+                                    </div>
                                 </div>
                             @empty
                                 <div class="text-center py-4">
@@ -585,6 +590,12 @@
                                             <span class="px-3 py-1 text-xs font-semibold rounded-full shadow-md {{ $task->status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : ($task->status === 'In Progress' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white') }}">
                                                 {{ $task->status }}
                                             </span>
+                                            
+                                            <!-- Priority Badge -->
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full border shadow-sm {{ $task->getPriorityBadgeClasses() }}">
+                                                {{ $task->getPriorityText() }}
+                                            </span>
+                                            
                                             <!-- Edit Button (only for task creator) -->
                                             @can('update', $task)
                                             <a href="{{ route('tasks.edit', $task) }}" class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">
