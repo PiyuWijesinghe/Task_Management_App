@@ -243,7 +243,32 @@
                                                 Assign to Users:
                                             </label>
                                             
-                                            <div class="max-h-40 overflow-y-auto space-y-2 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 p-3">
+                                            <!-- Search Bar -->
+                                            <div class="relative mb-3">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                                    </svg>
+                                                </div>
+                                                <input type="text" 
+                                                       id="userSearch-{{ $task->id }}" 
+                                                       class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm transition-all duration-200"
+                                                       placeholder="Search users by name or username..."
+                                                       autocomplete="off"
+                                                       onkeyup="filterUsers(this, '{{ $task->id }}')">
+                                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                                    <button type="button" 
+                                                            id="clearSearch-{{ $task->id }}" 
+                                                            onclick="clearUserSearch('{{ $task->id }}')"
+                                                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 hidden">
+                                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="max-h-40 overflow-y-auto space-y-2 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-600 p-3 custom-scrollbar scrollbar-thin scrollbar-thumb-purple-400 dark:scrollbar-thumb-purple-600 scrollbar-track-gray-100 dark:scrollbar-track-gray-700 hover:scrollbar-thumb-purple-500 dark:hover:scrollbar-thumb-purple-500 scrollbar-thumb-rounded-full scrollbar-track-rounded-full" id="userList-{{ $task->id }}">
                                                 @php
                                                     // Get currently assigned user IDs
                                                     $currentAssignees = collect();
@@ -257,7 +282,9 @@
                                                 @endphp
                                                 
                                                 @foreach($users as $user)
-                                                    <label class="flex items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded">
+                                                    <label class="user-item flex items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors duration-200" 
+                                                           data-user-name="{{ strtolower($user->name) }}" 
+                                                           data-user-username="{{ strtolower($user->username ?? '') }}">
                                                         <input type="checkbox" 
                                                                name="assigned_users[]" 
                                                                value="{{ $user->id }}"
@@ -277,6 +304,14 @@
                                                 @if($users->isEmpty())
                                                     <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">No other users available</p>
                                                 @endif
+                                                
+                                                <!-- No Results Message -->
+                                                <div id="noResults-{{ $task->id }}" class="text-sm text-gray-500 dark:text-gray-400 text-center py-4 hidden">
+                                                    <svg class="mx-auto h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                                    </svg>
+                                                    No users found matching your search
+                                                </div>
                                             </div>
                                         </div>
                                         
@@ -338,5 +373,189 @@
             // Submit the form
             form.submit();
         }
+        
+        function filterUsers(input, taskId) {
+            const searchTerm = input.value.toLowerCase().trim();
+            const userList = document.getElementById(`userList-${taskId}`);
+            const userItems = userList.querySelectorAll('.user-item');
+            const noResults = document.getElementById(`noResults-${taskId}`);
+            const clearButton = document.getElementById(`clearSearch-${taskId}`);
+            
+            let visibleCount = 0;
+            
+            // Show/hide clear button
+            if (searchTerm.length > 0) {
+                clearButton.classList.remove('hidden');
+            } else {
+                clearButton.classList.add('hidden');
+            }
+            
+            // Filter user items
+            userItems.forEach(item => {
+                const userName = item.dataset.userName || '';
+                const userUsername = item.dataset.userUsername || '';
+                
+                if (userName.includes(searchTerm) || userUsername.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                    visibleCount++;
+                    
+                    // Highlight matching text
+                    highlightSearchTerm(item, searchTerm);
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Show/hide no results message
+            if (visibleCount === 0 && searchTerm.length > 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+        
+        function highlightSearchTerm(item, searchTerm) {
+            if (searchTerm.length === 0) return;
+            
+            const textElements = item.querySelectorAll('span');
+            textElements.forEach(span => {
+                const originalText = span.textContent;
+                if (originalText && !span.classList.contains('rounded-full')) { // Skip badge spans
+                    const regex = new RegExp(`(${searchTerm})`, 'gi');
+                    const highlightedText = originalText.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">$1</mark>');
+                    if (highlightedText !== originalText) {
+                        span.innerHTML = highlightedText;
+                    }
+                }
+            });
+        }
+        
+        function clearUserSearch(taskId) {
+            const searchInput = document.getElementById(`userSearch-${taskId}`);
+            const userList = document.getElementById(`userList-${taskId}`);
+            const userItems = userList.querySelectorAll('.user-item');
+            const noResults = document.getElementById(`noResults-${taskId}`);
+            const clearButton = document.getElementById(`clearSearch-${taskId}`);
+            
+            // Clear search input
+            searchInput.value = '';
+            
+            // Show all users
+            userItems.forEach(item => {
+                item.style.display = 'flex';
+                
+                // Remove highlights
+                const textElements = item.querySelectorAll('span');
+                textElements.forEach(span => {
+                    if (!span.classList.contains('rounded-full')) { // Skip badge spans
+                        span.innerHTML = span.textContent;
+                    }
+                });
+            });
+            
+            // Hide no results and clear button
+            noResults.classList.add('hidden');
+            clearButton.classList.add('hidden');
+            
+            // Focus back to search input
+            searchInput.focus();
+        }
+        
+        // Add keyboard navigation support
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add keyboard support for search inputs
+            document.querySelectorAll('[id^="userSearch-"]').forEach(input => {
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        const taskId = this.id.replace('userSearch-', '');
+                        clearUserSearch(taskId);
+                    }
+                });
+            });
+        });
     </script>
+
+    <style>
+        /* Custom Scrollbar Styles */
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #a855f7 #f3f4f6;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f3f4f6;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #9333ea, #2563eb);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Dark mode scrollbar */
+        .dark .custom-scrollbar::-webkit-scrollbar-track {
+            background: #374151;
+        }
+
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            border: 1px solid #4b5563;
+        }
+
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+        }
+
+        /* Enhanced scrollbar for user lists */
+        #userList-{{ $task->id ?? 'default' }} {
+            scrollbar-width: thin;
+            scrollbar-color: #a855f7 #f3f4f6;
+        }
+
+        #userList-{{ $task->id ?? 'default' }}::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #userList-{{ $task->id ?? 'default' }}::-webkit-scrollbar-track {
+            background: #f8fafc;
+            border-radius: 8px;
+            margin: 4px;
+        }
+
+        #userList-{{ $task->id ?? 'default' }}::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #a855f7, #ec4899);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        #userList-{{ $task->id ?? 'default' }}::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #9333ea, #db2777);
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+        }
+
+        /* Dark mode for user lists */
+        .dark #userList-{{ $task->id ?? 'default' }}::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+
+        .dark #userList-{{ $task->id ?? 'default' }}::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #8b5cf6, #f472b6);
+        }
+
+        .dark #userList-{{ $task->id ?? 'default' }}::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #7c3aed, #ec4899);
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+        }
+    </style>
 </x-app-layout>

@@ -288,6 +288,7 @@ CACHE_STORE=database
 QUEUE_CONNECTION=database
 ```
 
+
 ## Contributing
 
 1. Fork the repository
