@@ -264,8 +264,12 @@
                                                                {{ in_array($user->id, $currentAssignees) ? 'checked' : '' }}
                                                                class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 rounded">
                                                         <div class="ml-3 flex-1">
-                                                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->name }}</span>
-                                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ $user->email }}</div>
+                                                            <div class="flex items-center space-x-3">
+                                                                <span class="text-sm font-medium text-gray-900 dark:text-white">👤 {{ $user->username ?? $user->name }}</span>
+                                                                @if($user->name && $user->username && $user->username !== $user->name)
+                                                                    <span class="text-xs px-2 py-1 bg-purple-100 dark:bg-purple-800 text-purple-600 dark:text-purple-300 rounded-full font-medium">{{ $user->name }}</span>
+                                                                @endif
+                                                            </div>
                                                         </div>
                                                     </label>
                                                 @endforeach

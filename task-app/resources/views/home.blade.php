@@ -117,8 +117,8 @@
                 <!-- Features Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
                     <!-- Feature 1 -->
-                    <div class="bg-white/95 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/40 hover:scale-105 transition-all duration-300" style="box-shadow: 0 15px 35px rgba(47, 95, 133, 0.15);">
-                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg" style="background: linear-gradient(135deg, #5a51ca 0%, #7944be 100%);">
+                    <div class="bg-blue-50 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/40 hover:scale-105 transition-all duration-300" style="box-shadow: 0 15px 35px rgba(92, 154, 204, 0.15);">
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg" style="background: linear-gradient(135deg, #5b53d6 0%, #7944be 100%);">
                             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                             </svg>
@@ -130,7 +130,7 @@
                     </div>
 
                     <!-- Feature 2 -->
-                    <div class="bg-white/95 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/40 hover:scale-105 transition-all duration-300" style="box-shadow: 0 15px 35px rgba(47, 95, 133, 0.15);">
+                    <div class="bg-blue-50 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/40 hover:scale-105 transition-all duration-300" style="box-shadow: 0 15px 35px rgba(47, 95, 133, 0.15);">
                         <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg" style="background: linear-gradient(135deg, #7d6fe6 0%, #302f85 100%);">
                             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -143,7 +143,7 @@
                     </div>
 
                     <!-- Feature 3 -->
-                    <div class="bg-white/95 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/40 hover:scale-105 transition-all duration-300" style="box-shadow: 0 15px 35px rgba(47, 95, 133, 0.15);">
+                    <div class="bg-blue-50 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/40 hover:scale-105 transition-all duration-300" style="box-shadow: 0 15px 35px rgba(47, 95, 133, 0.15);">
                         <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg" style="background: linear-gradient(135deg, #2F5F85 0%, #4317be 100%);">
                             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>

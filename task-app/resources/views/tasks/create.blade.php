@@ -237,15 +237,15 @@
                             <!-- Status -->
                             <div class="space-y-2">
                                 <label for="status" class="flex items-center text-sm font-semibold text-gray-900 dark:text-white">
-                                    <div class="w-4 h-4 mr-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
-                                        <svg class="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="w-4 h-4 mr-2 bg-gradient-to-r from-blue-500 to-blue-500 rounded-full flex items-center justify-center">
+                                        <svg class="w-3 h-3 text-white-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                     </div>
                                     Status
                                 </label>
                                 <select id="status" name="status" 
-                                    class="block w-full px-4 py-3 bg-emerald-50 dark:bg-emerald-900/30 backdrop-blur-sm border-2 border-emerald-300 dark:border-emerald-600 rounded-xl text-gray-900 dark:text-red focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300 hover:shadow-xl hover:bg-emerald-100 dark:hover:bg-emerald-800/40 hover:scale-[1.02] appearance-none bg-no-repeat bg-right pr-10" style="background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 4 5%22><path fill=%22%23667eea%22 d=%22M2 0L0 2h4zm0 5L0 3h4z%22/></svg>'); background-size: 12px; background-position: calc(100% - 12px) center;">
+                                    class="block w-full px-4 py-3 bg-emerald-50 dark:bg-emerald-900/30 backdrop-blur-sm border-2 border-blue-300 dark:border-blue-600 rounded-xl text-gray-900 dark:text-red focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:shadow-xl hover:bg-emerald-100 dark:hover:bg-blue-800/40 hover:scale-[1.02] appearance-none bg-no-repeat bg-right pr-10" style="background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 4 5%22><path fill=%22%23667eea%22 d=%22M2 0L0 2h4zm0 5L0 3h4z%22/></svg>'); background-size: 12px; background-position: calc(100% - 12px) center;">
                                     <option value="Pending" {{ old('status') == 'Pending' ? 'selected' : '' }} class="bg-red-50 text-gray-900">🔴 Pending</option>
                                     <option value="In Progress" {{ old('status') == 'In Progress' ? 'selected' : '' }} class="bg-yellow-50 text-gray-900">🟡 In Progress</option>
                                     <option value="Completed" {{ old('status') == 'Completed' ? 'selected' : '' }} class="bg-green-50 text-gray-900">🟢 Completed</option>
@@ -258,15 +258,15 @@
                             <!-- Priority -->
                             <div class="space-y-2">
                                 <label for="priority" class="flex items-center text-sm font-semibold text-gray-900 dark:text-white">
-                                    <div class="w-4 h-4 mr-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-                                        <svg class="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="w-4 h-4 mr-2 bg-gradient-to-r from-blue-500 to-blue-500 rounded-full flex items-center justify-center">
+                                        <svg class="w-3 h-3 text-white-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                                         </svg>
                                     </div>
                                     Priority Level
                                 </label>
                                 <select id="priority" name="priority" 
-                                    class="block w-full px-4 py-3 bg-orange-50 dark:bg-orange-900/30 backdrop-blur-sm border-2 border-orange-300 dark:border-orange-600 rounded-xl text-gray-900 dark:text-red-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 hover:shadow-xl hover:bg-orange-100 dark:hover:bg-orange-800/40 hover:scale-[1.02] appearance-none bg-no-repeat bg-right pr-10" style="background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 4 5%22><path fill=%22%23f97316%22 d=%22M2 0L0 2h4zm0 5L0 3h4z%22/></svg>'); background-size: 12px; background-position: calc(100% - 12px) center;">
+                                    class="block w-full px-4 py-3 bg-blue-200 dark:bg-blue-900/30 backdrop-blur-sm border-2 border-blue-300 dark:border-blue-600 rounded-xl text-gray-900 dark:text-black-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:shadow-xl hover:bg-blue-500 dark:hover:bg-blue-800/40 hover:scale-[1.02] appearance-none bg-no-repeat bg-right pr-10" style="background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 4 5%22><path fill=%22%23f97316%22 d=%22M2 0L0 2h4zm0 5L0 3h4z%22/></svg>'); background-size: 12px; background-position: calc(100% - 12px) center;">
                                     <option value="High" {{ old('priority') == 'High' ? 'selected' : '' }} class="bg-red-50 text-gray-900">🔥 High Priority</option>
                                     <option value="Medium" {{ old('priority', 'Medium') == 'Medium' ? 'selected' : '' }} class="bg-yellow-50 text-gray-900">⚡ Medium Priority</option>
                                     <option value="Low" {{ old('priority') == 'Low' ? 'selected' : '' }} class="bg-green-50 text-gray-900">🟢 Low Priority</option>
@@ -279,7 +279,7 @@
                             <!-- Assign to Users -->
                             <div class="space-y-2">
                                 <label class="flex items-center text-sm font-semibold text-gray-900 dark:text-white">
-                                    <div class="w-4 h-4 mr-2 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full flex items-center justify-center">
+                                    <div class="w-4 h-4 mr-2 bg-gradient-to-r from-blue-500 to-blue-500 rounded-full flex items-center justify-center">
                                         <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                         </svg>
@@ -287,53 +287,93 @@
                                     Assign to Users (Optional)
                                 </label>
                                 
-                                <div class="bg-gradient-to-r from-rose-100 via-pink-100 to-violet-100 dark:from-rose-800/50 dark:via-pink-800/50 dark:to-violet-800/50 backdrop-blur-sm border-2 border-rose-400 dark:border-rose-500/60 rounded-xl transition-all duration-300 hover:shadow-xl hover:from-rose-200 hover:via-pink-200 hover:to-violet-200 dark:hover:from-rose-700/60 dark:hover:via-pink-700/60 dark:hover:to-violet-700/60">
+                                <div class="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-900 dark:from-blue-900/50 dark:via-blue-900/50 dark:to-violet-800/50 backdrop-blur-sm border-2 border-blue-400 dark:border-blue-500/60 rounded-xl transition-all duration-300 hover:shadow-xl hover:from-blue-200 hover:via-blue-200 hover:to-blue-200 dark:hover:from-blue-700/60 dark:hover:via-blue-700/60 dark:hover:to-violet-700/60">
                                     
-                                    <!-- Dropdown header/trigger -->
-                                    <button type="button" id="dropdown-trigger" class="w-full px-4 py-3 flex items-center justify-between hover:bg-white/10 dark:hover:bg-gray-800/10 rounded-t-xl transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500">
-                                        <div class="flex items-center">
-                                            <span class="text-sm font-medium text-gray-900 dark:text-white">👥 Select Users to Assign</span>
-                                            <span id="selected-count" class="ml-2 px-2 py-1 text-xs bg-rose-200 dark:bg-rose-700 text-rose-800 dark:text-rose-200 rounded-full hidden">0 selected</span>
-                                        </div>
-                                        <svg id="dropdown-arrow" class="w-5 h-5 text-gray-600 dark:text-gray-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </button>
-                                    
-                                    <!-- Dropdown content -->
-                                    <div id="user-dropdown-content" class="hidden border-t border-white/20 dark:border-gray-600/20">
-                                        @if($users->count() > 0)
-                                            <!-- Keep for myself option -->
-                                            <div class="px-4 py-2 border-b border-white/10 dark:border-gray-600/10">
-                                                <label class="flex items-center p-2 hover:bg-white/30 dark:hover:bg-gray-800/30 rounded-lg transition-colors cursor-pointer">
-                                                    <input type="checkbox" 
-                                                           id="keep_self" 
-                                                           class="h-4 w-4 text-rose-600 focus:ring-rose-500 border-gray-300 dark:border-gray-600 rounded">
-                                                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-white">👤 Keep task for myself</span>
-                                                </label>
+                                    <!-- Search input -->
+                                    <div class="px-4 py-3 border-b border-white/20 dark:border-gray-600/20">
+                                        <div class="relative">
+                                            <input type="text" 
+                                                   id="user-search" 
+                                                   placeholder="🔍 Search users or type 'myself'..." 
+                                                   class="w-full px-4 py-3 pl-12 pr-4 bg-gradient-to-r from-white/60 to-white/40 dark:from-gray-800/60 dark:to-gray-800/40 border-2 border-white/40 dark:border-gray-600/40 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600">
+                                            <div class="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+                                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                                </svg>
                                             </div>
-                                            
-                                            <!-- Users list with scrolling -->
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                    <!-- Users list -->
+                                    <div id="user-dropdown-content">
+                                        @if($users->count() > 0)
+                                            <!-- Scrollable users list -->
                                             <div class="px-4 py-2">
-                                                <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 px-2">Or assign to team members:</p>
-                                                <div class="max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-rose-300 dark:scrollbar-thumb-rose-600 scrollbar-track-transparent hover:scrollbar-thumb-rose-400 dark:hover:scrollbar-thumb-rose-500 space-y-1">
-                                                    @foreach($users as $user)
-                                                        @php
-                                                            $oldAssignedUsers = old('assigned_users', []);
-                                                        @endphp
-                                                        <label class="flex items-center p-2 hover:bg-white/30 dark:hover:bg-gray-800/30 rounded-lg transition-colors cursor-pointer">
-                                                            <input type="checkbox" 
-                                                                   name="assigned_users[]" 
-                                                                   value="{{ $user->id }}"
-                                                                   id="user_{{ $user->id }}"
-                                                                   {{ in_array($user->id, $oldAssignedUsers) ? 'checked' : '' }}
-                                                                   class="h-4 w-4 text-rose-600 focus:ring-rose-500 border-gray-300 dark:border-gray-600 rounded user-checkbox">
-                                                            <div class="ml-3 flex-1">
-                                                                <span class="text-sm font-medium text-gray-900 dark:text-white">🎯 {{ $user->name }}</span>
-                                                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ $user->email }}</div>
+                                                <div id="users-container" class="h-32 overflow-y-scroll scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-blue-100 space-y-2 pr-2 border border-blue-200 dark:border-blue-600 rounded-lg bg-white/20 dark:bg-gray-800/20" style="scrollbar-width: thin; scrollbar-color: #8675f5 #bbb5f9; max-height: 128px;">
+                                                    
+                                                    <!-- Keep for myself option - Always at top -->
+                                                    <label class="user-item self-item flex items-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-800/30 dark:hover:to-indigo-800/30 rounded-xl transition-all duration-300 cursor-pointer border-2 border-blue-200/50 dark:border-blue-600/30 hover:border-blue-300 dark:hover:border-blue-500 shadow-sm hover:shadow-md" 
+                                                           data-user-name="myself" 
+                                                           data-user-email="myself"
+                                                           data-user-username="myself">
+                                                        <input type="checkbox" 
+                                                               id="keep_self" 
+                                                               class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-blue-300 dark:border-blue-600 rounded transition-all duration-200">
+                                                        <div class="ml-4 flex-1">
+                                                            <div class="flex items-center space-x-3">
+                                                                <span class="text-sm font-semibold text-blue-900 dark:text-blue-200">👤 Keep task for myself</span>
+                                                                <span class="text-xs px-2 py-1 bg-blue-200 dark:bg-blue-700 text-blue-800 dark:text-blue-200 rounded-full font-medium">Personal</span>
                                                             </div>
-                                                        </label>
+                                                            <div class="text-xs text-blue-600 dark:text-blue-400 mt-1 font-medium">Assign this task to yourself only</div>
+                                                        </div>
+                                                    </label>
+
+                                                    <!-- Divider -->
+                                                    <div class="flex items-center py-2">
+                                                        <div class="flex-1 border-t border-gray-200 dark:border-gray-600"></div>
+                                                        <span class="px-3 text-xs text-gray-500 dark:text-gray-400 font-medium">OR ASSIGN TO OTHERS</span>
+                                                        <div class="flex-1 border-t border-gray-200 dark:border-gray-600"></div>
+                                                    </div>
+
+                                                    <!-- Other users -->
+                                                    @foreach($users as $user)
+                                                        @if($user->id != auth()->id())
+                                                            @php
+                                                                $oldAssignedUsers = old('assigned_users', []);
+                                                            @endphp
+                                                            <label class="user-item other-user flex items-center p-4 hover:bg-white/60 dark:hover:bg-gray-800/60 rounded-xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-rose-200 dark:hover:border-rose-600 shadow-sm hover:shadow-md" 
+                                                                   data-user-name="{{ strtolower($user->name) }}" 
+                                                                   data-user-email="{{ strtolower($user->email) }}"
+                                                                   data-user-username="{{ strtolower($user->username ?? '') }}">
+                                                                <input type="checkbox" 
+                                                                       name="assigned_users[]" 
+                                                                       value="{{ $user->id }}"
+                                                                       id="user_{{ $user->id }}"
+                                                                       {{ in_array($user->id, $oldAssignedUsers) ? 'checked' : '' }}
+                                                                       class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded user-checkbox transition-all duration-200">
+                                                                <div class="ml-4 flex-1">
+                                                                    <div class="flex items-center space-x-3">
+                                                                        <span class="text-sm font-semibold text-gray-900 dark:text-white">👤 {{ $user->username ?? $user->name }}</span>
+                                                                        @if($user->name && $user->username && $user->username !== $user->name)
+                                                                            <span class="text-xs px-2 py-1 bg-rose-100 dark:bg-rose-800 text-rose-600 dark:text-rose-300 rounded-full font-medium">{{ $user->name }}</span>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </label>
+                                                        @endif
                                                     @endforeach
+                                                </div>
+                                                
+                                                <!-- No results message -->
+                                                <div id="no-results" class="hidden px-4 py-8 text-center">
+                                                    <div class="text-gray-400 dark:text-gray-500">
+                                                        <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                                        </svg>
+                                                        <p class="text-sm">No users found</p>
+                                                        <p class="text-xs mt-1">Try a different search term</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                             
@@ -379,25 +419,76 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const dropdownTrigger = document.getElementById('dropdown-trigger');
-            const dropdownContent = document.getElementById('user-dropdown-content');
-            const dropdownArrow = document.getElementById('dropdown-arrow');
+            const userSearch = document.getElementById('user-search');
             const selectedCount = document.getElementById('selected-count');
             const selfCheckbox = document.getElementById('keep_self');
             const userCheckboxes = document.querySelectorAll('.user-checkbox');
             const selectAllBtn = document.getElementById('select-all-btn');
             const clearAllBtn = document.getElementById('clear-all-btn');
+            const userItems = document.querySelectorAll('.user-item');
+            const noResults = document.getElementById('no-results');
+            const usersContainer = document.getElementById('users-container');
 
-            // Toggle dropdown function
-            function toggleDropdown() {
-                if (dropdownContent && dropdownArrow) {
-                    if (dropdownContent.classList.contains('hidden')) {
-                        dropdownContent.classList.remove('hidden');
-                        dropdownArrow.classList.add('rotate-180');
+            // Search functionality
+            function performSearch() {
+                const searchTerm = userSearch.value.toLowerCase().trim();
+                let visibleCount = 0;
+                const selfItem = document.querySelector('.self-item');
+                const otherUsers = document.querySelectorAll('.other-user');
+                const divider = document.querySelector('.flex.items-center.py-2');
+
+                // Handle self item
+                if (selfItem) {
+                    const selfMatches = searchTerm === '' || 
+                                       'myself'.includes(searchTerm) || 
+                                       'keep'.includes(searchTerm) || 
+                                       'personal'.includes(searchTerm) ||
+                                       'me'.includes(searchTerm);
+                    
+                    if (selfMatches) {
+                        selfItem.style.display = 'flex';
+                        visibleCount++;
                     } else {
-                        dropdownContent.classList.add('hidden');
-                        dropdownArrow.classList.remove('rotate-180');
+                        selfItem.style.display = 'none';
                     }
+                }
+
+                // Handle other users
+                let otherUsersVisible = 0;
+                otherUsers.forEach(item => {
+                    const userName = item.dataset.userName || '';
+                    const userEmail = item.dataset.userEmail || '';
+                    const userUsername = item.dataset.userUsername || '';
+                    
+                    const matches = userName.includes(searchTerm) || 
+                                  userEmail.includes(searchTerm) || 
+                                  userUsername.includes(searchTerm);
+                    
+                    if (matches || searchTerm === '') {
+                        item.style.display = 'flex';
+                        visibleCount++;
+                        otherUsersVisible++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Show/hide divider based on visibility
+                if (divider) {
+                    if (visibleCount > 0 && selfItem && selfItem.style.display !== 'none' && otherUsersVisible > 0) {
+                        divider.style.display = 'flex';
+                    } else {
+                        divider.style.display = 'none';
+                    }
+                }
+
+                // Show/hide no results message
+                if (visibleCount === 0 && searchTerm !== '') {
+                    noResults.classList.remove('hidden');
+                    usersContainer.style.display = 'none';
+                } else {
+                    noResults.classList.add('hidden');
+                    usersContainer.style.display = 'block';
                 }
             }
 
@@ -429,11 +520,14 @@
                 updateSelectedCount();
             }
 
-            // Select all users
+            // Select all visible users
             function selectAllUsers() {
                 if (selfCheckbox) selfCheckbox.checked = false;
                 userCheckboxes.forEach(checkbox => {
-                    checkbox.checked = true;
+                    const userItem = checkbox.closest('.user-item');
+                    if (userItem && userItem.style.display !== 'none') {
+                        checkbox.checked = true;
+                    }
                 });
                 updateSelectedCount();
             }
@@ -447,13 +541,28 @@
                 updateSelectedCount();
             }
 
-            // Event listeners
-            if (dropdownTrigger) {
-                dropdownTrigger.addEventListener('click', function(e) {
+            // Auto-complete on Enter key
+            function handleKeyDown(e) {
+                if (e.key === 'Enter') {
                     e.preventDefault();
-                    e.stopPropagation();
-                    toggleDropdown();
-                });
+                    const visibleItems = Array.from(userItems).filter(item => item.style.display !== 'none');
+                    if (visibleItems.length === 1) {
+                        const checkbox = visibleItems[0].querySelector('.user-checkbox');
+                        if (checkbox) {
+                            checkbox.checked = !checkbox.checked;
+                            if (checkbox.checked && selfCheckbox) {
+                                selfCheckbox.checked = false;
+                            }
+                            updateSelectedCount();
+                        }
+                    }
+                }
+            }
+
+            // Event listeners
+            if (userSearch) {
+                userSearch.addEventListener('input', performSearch);
+                userSearch.addEventListener('keydown', handleKeyDown);
             }
 
             if (selfCheckbox) {
@@ -477,18 +586,10 @@
                 clearAllBtn.addEventListener('click', clearAllUsers);
             }
 
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(event) {
-                const dropdownContainer = dropdownTrigger ? dropdownTrigger.closest('.bg-gradient-to-r') : null;
-                if (dropdownContainer && !dropdownContainer.contains(event.target)) {
-                    if (dropdownContent) dropdownContent.classList.add('hidden');
-                    if (dropdownArrow) dropdownArrow.classList.remove('rotate-180');
-                }
-            });
-
             // Initialize
             updateSelectedCount();
-            if (dropdownContent) dropdownContent.classList.add('hidden');
+            performSearch(); // Initialize search state
         });
     </script>
+
 </x-app-layout>

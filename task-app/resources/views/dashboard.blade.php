@@ -475,6 +475,60 @@
                 </div>
             </div>
             
+            <!-- Filter and Sort Controls -->
+            <div class="mt-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl overflow-hidden shadow-2xl rounded-2xl border border-white/20 dark:border-gray-700/20">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                            <div class="w-8 h-8 bg-gradient-to-r from-rose-500 to-orange-600 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                </svg>
+                            </div>
+                            Filter & Sort Tasks
+                        </h3>
+                        <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                            <span>{{ (isset($pending) ? $pending->count() : 0) + (isset($inProgress) ? $inProgress->count() : 0) + (isset($completed) ? $completed->count() : 0) }} tasks</span>
+                        </div>
+                    </div>
+                    
+                    <form method="GET" action="{{ route('dashboard') }}" class="flex flex-wrap items-center gap-4">
+                        <!-- Priority Filter -->
+                        <div class="flex items-center space-x-2">
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Priority:</label>
+                            <select name="priority" class="px-3 py-3 bg-white/60 dark:bg-gray-700/60 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-black focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                <option value="">All Priorities</option>
+                                <option value="High" {{ (isset($priorityFilter) && $priorityFilter === 'High') ? 'selected' : '' }}>🔥 High Priority</option>
+                                <option value="Medium" {{ (isset($priorityFilter) && $priorityFilter === 'Medium') ? 'selected' : '' }}>⚡ Medium Priority</option>
+                                <option value="Low" {{ (isset($priorityFilter) && $priorityFilter === 'Low') ? 'selected' : '' }}>🟢 Low Priority</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Sort By -->
+                        <div class="flex items-center space-x-2">
+                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Sort by:</label>
+                            <select name="sort" class="px-3 py-2 bg-white/60 dark:bg-gray-700/60 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-black focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                <option value="due_date" {{ (isset($sortBy) && $sortBy === 'due_date') ? 'selected' : '' }}>Due Date</option>
+                                <option value="priority" {{ (isset($sortBy) && $sortBy === 'priority') ? 'selected' : '' }}>Priority Level</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex items-center space-x-2">
+                            <button type="submit" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md">
+                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                </svg>
+                                Apply
+                            </button>
+                            <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-black-300 text-sm font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-200">
+                                Clear
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
             <!-- All Tasks Management -->
             <div class="mt-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl overflow-hidden shadow-2xl rounded-2xl border border-white/20 dark:border-gray-700/20">
                 <div class="p-6">
