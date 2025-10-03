@@ -1,18 +1,42 @@
 # Task Management Application
 
-A comprehensive task management system built with Laravel 12 and MySQL, featuring user authentication, task CRUD operations, and a clean web interface.
+A comprehensive collaborative task management system built with Laravel 12 and MySQL, featuring advanced user authentication, multi-user task assignment, priority management, real-time commenting, and a beautiful responsive interface.
 
-## Features
+## Key Features
 
-- User registration and authentication with Laravel Breeze
-- Create, read, update, and delete tasks
-- Task status management (Pending, In Progress, Completed)
-- Due date tracking and management
-- Task assignment to authenticated users
-- Responsive web interface with Tailwind CSS
-- Database-driven session management
-- User profile management and security
-- Task authorization policies
+### Authentication & User Management
+- **Username-based Authentication**: Secure login with username or email
+- **User Profile Management**: Complete profile editing with avatar initials
+- **Session Management**: Database-driven secure session handling
+- **Authorization Policies**: Role-based task access control
+
+### Advanced Task Management
+- **Complete CRUD Operations**: Create, read, update, and delete tasks
+- **Multi-User Assignment**: Assign tasks to multiple users simultaneously
+- **Priority System**: Set and filter tasks by priority (High, Medium, Low)
+- **Status Workflow**: Track progress (Pending, In Progress, Completed)
+- **Due Date Management**: Set deadlines with overdue alerts
+- **Task Postponement**: Reschedule tasks with reason tracking
+
+### Collaborative Features
+- **Real-time Comments**: Add comments to tasks with chronological ordering
+- **Comment Management**: Delete own comments with proper authorization
+- **Activity Tracking**: Timestamps for all actions and updates
+
+### Beautiful User Interface
+- **Gradient Design**: Modern UI with beautiful gradient backgrounds
+- **Responsive Layout**: Perfect on desktop, tablet, and mobile devices
+- **Interactive Elements**: Hover effects
+- **Dark Mode Support**: Toggle between light and dark themes
+- **Priority Badges**: Visual priority indicators with color coding
+- **Status Indicators**: Clear visual status representation
+
+### Advanced Filtering & Search
+- **Priority Filtering**: Filter tasks by High, Medium, Low priority
+- **Status Filtering**: View tasks by completion status
+- **User Assignment Search**: Find tasks by assigned users
+- **Searchable Dropdowns**: Easy user selection with search functionality
+- **Sort Options**: Sort by priority, due date, or creation date
 
 ## Technology Stack
 
@@ -99,7 +123,7 @@ A comprehensive task management system built with Laravel 12 and MySQL, featurin
 
 ### Users Table
 - `id` - Primary key (auto-increment)
-- `name` - User's full name (string)
+- `username` - Unique username for login (string, unique)
 - `email` - User's email address (string, unique)
 - `email_verified_at` - Email verification timestamp
 - `password` - Hashed password
@@ -113,8 +137,25 @@ A comprehensive task management system built with Laravel 12 and MySQL, featurin
 - `description` - Task description (text, nullable)
 - `due_date` - Task due date (date, nullable)
 - `status` - Task status (enum: Pending, In Progress, Completed)
-- `user_id` - Foreign key reference to users table (with cascade delete)
+- `priority` - Task priority (enum: High, Medium, Low, default: Medium)
+- `user_id` - Foreign key reference to users table (task creator)
+- `assigned_user_id` - Foreign key reference for single user assignment
 - `created_at` - Record creation timestamp
+- `updated_at` - Last update timestamp
+
+### Task User Pivot Table (task_user)
+- `id` - Primary key (auto-increment)
+- `task_id` - Foreign key reference to tasks table
+- `user_id` - Foreign key reference to users table
+- `created_at` - Assignment timestamp
+- `updated_at` - Last update timestamp
+
+### Task Comments Table (task_comments)
+- `id` - Primary key (auto-increment)
+- `task_id` - Foreign key reference to tasks table (cascade delete)
+- `user_id` - Foreign key reference to users table (cascade delete)
+- `comment` - Comment text (text, required)
+- `created_at` - Comment creation timestamp
 - `updated_at` - Last update timestamp
 
 ### Sessions Table
@@ -136,40 +177,33 @@ A comprehensive task management system built with Laravel 12 and MySQL, featurin
 - `POST /register` - Process user registration
 
 ### Protected Routes (Require Authentication)
-- `GET /dashboard` - Main dashboard
-- `GET /tasks` - List user's tasks
-- `GET /tasks/create` - Task creation form
-- `POST /tasks` - Store new task
-- `GET /tasks/{id}` - Display specific task
+
+#### Dashboard & Task Management
+- `GET /dashboard` - Main dashboard with task overview and statistics
+- `GET /tasks` - List tasks with filtering and sorting options
+- `GET /tasks/create` - Task creation form with user assignment
+- `POST /tasks` - Store new task with validation
+- `GET /tasks/{id}` - Display specific task with comments
 - `GET /tasks/{id}/edit` - Edit task form
 - `PUT /tasks/{id}` - Update task
 - `DELETE /tasks/{id}` - Delete task
+- `PATCH /tasks/{id}/complete` - Mark task as completed
+
+#### Task Assignment & Management
+- `GET /tasks-assign` - Multi-user task assignment interface
+- `PATCH /tasks/{id}/assign` - Assign task to multiple users
+- `POST /tasks/{id}/postpone` - Postpone task with reason
+- `GET /tasks-postponed` - View postponed tasks
+
+#### Comment System
+- `POST /tasks/{id}/comments` - Add comment to task
+- `DELETE /comments/{id}` - Delete comment (with authorization)
+
+#### User Profile
 - `GET /profile` - User profile management
 - `PATCH /profile` - Update user profile
 - `DELETE /profile` - Delete user account
 
-## Key Features
-
-### Task Management
-- Full CRUD operations for tasks
-- Task status workflow management
-- Due date tracking and alerts
-- User-specific task isolation
-- Task authorization policies
-
-### Security Features
-- CSRF protection on all forms
-- Password hashing with Laravel Hash
-- SQL injection prevention via Eloquent ORM
-- XSS protection through Blade templating
-- Authentication middleware protection
-- Authorization policies for task access
-
-### Session Management
-- Database-driven session storage
-- Secure session configuration
-- User activity tracking
-- Session cleanup and management
 
 ## Development
 
@@ -254,6 +288,73 @@ CACHE_STORE=database
 QUEUE_CONNECTION=database
 ```
 
+## 📁 Enhanced File Structure
+```
+app/
+├── Http/Controllers/
+│   ├── TaskController.php      # Advanced task operations with comments
+│   ├── ProfileController.php   # User profile management
+│   └── HomeController.php      # Home page controller
+├── Models/
+│   ├── Task.php               # Task model with priority, assignments & comments
+│   ├── TaskComment.php        # Comment model with user relationships
+│   └── User.php               # Enhanced user model with username auth
+├── Policies/
+│   └── TaskPolicy.php         # Comprehensive task authorization
+└── Providers/
+    ├── AppServiceProvider.php  # Application service bindings
+    └── AuthServiceProvider.php # Authorization policy registration
+
+database/
+├── migrations/
+│   ├── create_users_table.php           # Enhanced users with username
+│   ├── create_tasks_table.php           # Tasks with priority field
+│   ├── add_assigned_user_id_to_tasks.php # Single user assignment
+│   ├── create_task_user_pivot.php       # Multi-user assignment
+│   ├── create_task_comments.php         # Comment system
+│   ├── create_cache_table.php           # Cache storage
+│   ├── create_jobs_table.php            # Queue management
+│   └── create_sessions_table.php        # Session management
+├── seeders/
+│   ├── DatabaseSeeder.php               # Database seeding
+│   └── TestUserSeeder.php              # Test user creation
+└── factories/
+    └── UserFactory.php                  # User factory for testing
+
+resources/
+├── views/
+│   ├── dashboard.blade.php              # Enhanced dashboard with stats
+│   ├── home.blade.php                   # Landing page
+│   ├── welcome.blade.php                # Welcome page
+│   ├── tasks/
+│   │   ├── index.blade.php              # Task list with filtering
+│   │   ├── create.blade.php             # Task creation with assignments
+│   │   ├── edit.blade.php               # Task editing
+│   │   ├── show.blade.php               # Task details with comments
+│   │   ├── assign.blade.php             # Multi-user assignment
+│   │   └── postponed.blade.php          # Postponed tasks view
+│   ├── auth/                            # Authentication views
+│   ├── components/                      # Reusable UI components
+│   ├── layouts/                         # Layout templates
+│   └── profile/                         # User profile views
+├── css/
+│   └── app.css                          # Tailwind CSS with custom styles
+└── js/
+    ├── app.js                           # Main JavaScript application
+    └── bootstrap.js                     # JavaScript bootstrapping
+
+routes/
+├── web.php                              # Enhanced web routes with comments
+├── auth.php                             # Authentication routes
+└── console.php                          # Artisan commands
+
+public/
+├── build/                               # Compiled assets
+│   ├── manifest.json                    # Asset manifest
+│   └── assets/                          # CSS and JS files
+└── index.php                            # Application entry point
+```
+
 ## Contributing
 
 1. Fork the repository
@@ -262,7 +363,63 @@ QUEUE_CONNECTION=database
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-**Version**: 1.0.0  
-**Last Updated**: September 27, 2025  
+## License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Support
+
+For support and questions:
+- Create an issue in the repository
+- Check the troubleshooting section above
+- Review Laravel documentation at [laravel.com/docs](https://laravel.com/docs)
+
+## New Features (Latest Updates)
+
+### Version 2.0.0 - Major Feature Release
+
+#### Multi-User Task Assignment
+- **Searchable User Dropdowns**: Easy user selection with real-time search
+- **Many-to-Many Relationships**: Assign tasks to multiple users simultaneously
+- **Assignment Visualization**: Clear display of all assigned users with badges
+- **Assignment Management**: Dedicated interface for managing task assignments
+
+#### Priority Management System
+- **Priority Levels**: High, Medium, Low priority classification
+- **Visual Indicators**: Color-coded priority badges throughout the interface
+- **Priority Filtering**: Filter tasks by priority level
+- **Priority Sorting**: Sort task lists by priority importance
+
+#### Enhanced Authentication
+- **Username Login**: Login with username or email address
+- **User Profile Enhancement**: Complete profile management system
+- **Username Uniqueness**: Enforced unique usernames across the system
+- **Authentication Flexibility**: Multiple login methods for user convenience
+
+#### Real-Time Comment System
+- **Task Comments**: Add comments to any task for collaboration
+- **Chronological Ordering**: Comments displayed in chronological order (oldest first)
+- **User Attribution**: Each comment shows author name and timestamp
+- **Comment Management**: Delete own comments with proper authorization
+- **Visual Design**: Beautiful comment interface with user avatars
+
+#### UI/UX Enhancements
+- **Gradient Design System**: Modern gradient-based color scheme
+- **Interactive Elements**: Hover effects and smooth transitions
+- **Responsive Layout**: Perfect display on all device sizes
+- **Dark Mode**: Complete dark theme support
+- **Glass Morphism**: Modern glassmorphism design elements
+- **Improved Navigation**: Enhanced navigation with "View Details" buttons
+
+#### Advanced Filtering & Sorting
+- **Multi-Level Filtering**: Filter by status, priority, and assignments
+- **Smart Search**: Search across task titles and descriptions
+- **Sort Options**: Multiple sorting criteria (priority, date, status)
+- **Filter Persistence**: Maintain filter state across navigation
+
+
+**Version**: 2.0.0  
+**Last Updated**: October 3, 2025  
 **Laravel Version**: 12.x  
-**PHP Version**: 8.2+
+**PHP Version**: 8.2+  
+**Major Features**: Multi-user assignment, Priority system, Comment system, Enhanced UI
