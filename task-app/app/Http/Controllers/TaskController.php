@@ -19,40 +19,50 @@ class TaskController extends Controller
     {
         $user = auth()->user();
         
-        // Get both created and assigned tasks by status, ordered by due date priority
-        $pending = Task::where(function($query) use ($user) {
-            $query->where('user_id', $user->id)
-                  ->orWhere('assigned_user_id', $user->id)
-                  ->orWhereHas('assignedUsers', function($q) use ($user) {
-                      $q->where('user_id', $user->id);
-                  });
-        })->where('status', 'Pending')
-        ->with(['assignedUsers', 'assignedUser'])
-        ->orderByRaw('CASE WHEN due_date IS NULL THEN 1 ELSE 0 END')
-        ->orderBy('due_date', 'asc')
-        ->orderBy('created_at', 'desc')->get();
+        // Get priority filter
+        $priorityFilter = $request->get('priority');
+        $sortBy = $request->get('sort', 'due_date'); // Default sort by due_date
         
-        $inProgress = Task::where(function($query) use ($user) {
-            $query->where('user_id', $user->id)
-                  ->orWhere('assigned_user_id', $user->id)
-                  ->orWhereHas('assignedUsers', function($q) use ($user) {
-                      $q->where('user_id', $user->id);
-                  });
-        })->where('status', 'In Progress')
-        ->with(['assignedUsers', 'assignedUser'])
-        ->orderByRaw('CASE WHEN due_date IS NULL THEN 1 ELSE 0 END')
-        ->orderBy('due_date', 'asc')
-        ->orderBy('created_at', 'desc')->get();
+        // Base query for user's tasks
+        $baseQuery = function($query) use ($user, $priorityFilter) {
+            $query->where(function($subQuery) use ($user) {
+                $subQuery->where('user_id', $user->id)
+                         ->orWhere('assigned_user_id', $user->id)
+                         ->orWhereHas('assignedUsers', function($q) use ($user) {
+                             $q->where('user_id', $user->id);
+                         });
+            });
+            
+            // Apply priority filter if specified
+            if ($priorityFilter && in_array($priorityFilter, ['High', 'Medium', 'Low'])) {
+                $query->where('priority', $priorityFilter);
+            }
+            
+            return $query->with(['assignedUsers', 'assignedUser']);
+        };
         
-        $completed = Task::where(function($query) use ($user) {
-            $query->where('user_id', $user->id)
-                  ->orWhere('assigned_user_id', $user->id)
-                  ->orWhereHas('assignedUsers', function($q) use ($user) {
-                      $q->where('user_id', $user->id);
-                  });
-        })->where('status', 'Completed')
-        ->with(['assignedUsers', 'assignedUser'])
-        ->orderBy('created_at', 'desc')->get();
+        // Apply sorting based on user preference
+        $orderQuery = function($query) use ($sortBy) {
+            if ($sortBy === 'priority') {
+                // Sort by priority: High -> Medium -> Low
+                return $query->orderByRaw("CASE 
+                    WHEN priority = 'High' THEN 1 
+                    WHEN priority = 'Medium' THEN 2 
+                    WHEN priority = 'Low' THEN 3 
+                    ELSE 4 END")
+                    ->orderBy('created_at', 'desc');
+            } else {
+                // Default: Sort by due date, then creation date
+                return $query->orderByRaw('CASE WHEN due_date IS NULL THEN 1 ELSE 0 END')
+                    ->orderBy('due_date', 'asc')
+                    ->orderBy('created_at', 'desc');
+            }
+        };
+        
+        // Get tasks by status with filtering and sorting
+        $pending = $orderQuery($baseQuery(Task::query())->where('status', 'Pending'))->get();
+        $inProgress = $orderQuery($baseQuery(Task::query())->where('status', 'In Progress'))->get();
+        $completed = $orderQuery($baseQuery(Task::query())->where('status', 'Completed'))->get();
         
         // If filtering by status (from sidebar links)
         if ($request->has('status')) {
@@ -73,7 +83,62 @@ class TaskController extends Controller
             }
         }
         
-        return view('tasks.index', compact('pending', 'inProgress', 'completed'));
+        return view('tasks.index', compact('pending', 'inProgress', 'completed', 'priorityFilter', 'sortBy'));
+    }
+
+    /**
+     * Display the dashboard with filtering and sorting capabilities.
+     */
+    public function dashboard(Request $request)
+    {
+        $user = auth()->user();
+        
+        // Get priority filter and sort preference
+        $priorityFilter = $request->get('priority');
+        $sortBy = $request->get('sort', 'due_date'); // Default sort by due_date
+        
+        // Base query for user's tasks
+        $baseQuery = function($query) use ($user, $priorityFilter) {
+            $query->where(function($subQuery) use ($user) {
+                $subQuery->where('user_id', $user->id)
+                         ->orWhere('assigned_user_id', $user->id)
+                         ->orWhereHas('assignedUsers', function($q) use ($user) {
+                             $q->where('user_id', $user->id);
+                         });
+            });
+            
+            // Apply priority filter if specified
+            if ($priorityFilter && in_array($priorityFilter, ['High', 'Medium', 'Low'])) {
+                $query->where('priority', $priorityFilter);
+            }
+            
+            return $query->with(['assignedUsers', 'assignedUser']);
+        };
+        
+        // Apply sorting based on user preference
+        $orderQuery = function($query) use ($sortBy) {
+            if ($sortBy === 'priority') {
+                // Sort by priority: High -> Medium -> Low
+                return $query->orderByRaw("CASE 
+                    WHEN priority = 'High' THEN 1 
+                    WHEN priority = 'Medium' THEN 2 
+                    WHEN priority = 'Low' THEN 3 
+                    ELSE 4 END")
+                    ->orderBy('created_at', 'desc');
+            } else {
+                // Default: Sort by due date, then creation date
+                return $query->orderByRaw('CASE WHEN due_date IS NULL THEN 1 ELSE 0 END')
+                    ->orderBy('due_date', 'asc')
+                    ->orderBy('created_at', 'desc');
+            }
+        };
+        
+        // Get tasks by status with filtering and sorting
+        $pending = $orderQuery($baseQuery(Task::query())->where('status', 'Pending'))->get();
+        $inProgress = $orderQuery($baseQuery(Task::query())->where('status', 'In Progress'))->get();
+        $completed = $orderQuery($baseQuery(Task::query())->where('status', 'Completed'))->get();
+        
+        return view('dashboard', compact('pending', 'inProgress', 'completed', 'priorityFilter', 'sortBy'));
     }
 
     /**
@@ -81,7 +146,7 @@ class TaskController extends Controller
      */
     public function create()
     {
-        $users = User::where('id', '!=', auth()->id())->get(['id', 'name', 'email']);
+        $users = User::where('id', '!=', auth()->id())->get(['id', 'name', 'email', 'username']);
         return view('tasks.create', compact('users'));
     }
 
@@ -101,7 +166,7 @@ class TaskController extends Controller
         ], [
             'due_date.after_or_equal' => 'Due date cannot be in the past. Please select today or a future date.',
         ]);
-        $validated['user_id'] = auth()->id();
+        $validated['user_id'] = auth()->user()->id;
         
         // Remove assigned_users from validated data for task creation
         $assignedUsers = $validated['assigned_users'] ?? [];
@@ -208,7 +273,7 @@ class TaskController extends Controller
             ->get();
         
         // Get all users except the current user for assignment
-        $users = User::where('id', '!=', $user->id)->get(['id', 'name', 'email']);
+        $users = User::where('id', '!=', $user->id)->get(['id', 'name', 'email', 'username']);
         
         return view('tasks.assign', compact('tasks', 'users'));
     }
