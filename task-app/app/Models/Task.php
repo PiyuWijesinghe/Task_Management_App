@@ -76,6 +76,14 @@ class Task extends Model
     }
 
     /**
+     * Get the comments for the task.
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(TaskComment::class)->with('user')->orderBy('created_at', 'asc');
+    }
+
+    /**
      * Check if the current user can postpone this task.
      */
     public function canBePostponedBy(User $user): bool

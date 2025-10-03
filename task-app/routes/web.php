@@ -28,6 +28,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/tasks/{task}/assign', [TaskController::class, 'assignUser'])->name('tasks.assign.update');
     Route::post('/tasks/{task}/postpone', [TaskController::class, 'postpone'])->name('tasks.postpone');
     Route::get('/tasks-postponed', [TaskController::class, 'postponed'])->name('tasks.postponed');
+    
+    // Comment routes
+    Route::post('/tasks/{task}/comments', [TaskController::class, 'storeComment'])->name('tasks.comments.store');
+    Route::delete('/comments/{comment}', [TaskController::class, 'deleteComment'])->name('comments.delete');
 });
 
 require __DIR__.'/auth.php';

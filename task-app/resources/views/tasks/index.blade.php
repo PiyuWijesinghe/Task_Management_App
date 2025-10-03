@@ -209,7 +209,7 @@
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                                 <div class="w-8 h-8 bg-gradient-to-r from-rose-500 to-orange-600 rounded-lg flex items-center justify-center mr-3">
-                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                                     </svg>
                                 </div>
@@ -224,7 +224,7 @@
                             <!-- Priority Filter -->
                             <div class="flex items-center space-x-2">
                                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Priority:</label>
-                                <select name="priority" class="px-3 py-2 bg-white/60 dark:bg-gray-700/60 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200">
+                                <select name="priority" class="px-3 py-2 bg-white/60 dark:bg-gray-700/60 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-black focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200">
                                     <option value="">All Priorities</option>
                                     <option value="High" {{ (isset($priorityFilter) && $priorityFilter === 'High') ? 'selected' : '' }}>🔥 High Priority</option>
                                     <option value="Medium" {{ (isset($priorityFilter) && $priorityFilter === 'Medium') ? 'selected' : '' }}>⚡ Medium Priority</option>
@@ -235,7 +235,7 @@
                             <!-- Sort By -->
                             <div class="flex items-center space-x-2">
                                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Sort by:</label>
-                                <select name="sort" class="px-3 py-2 bg-white/60 dark:bg-gray-700/60 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200">
+                                <select name="sort" class="px-3 py-2 bg-white/60 dark:bg-gray-700/60 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-black focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200">
                                     <option value="due_date" {{ (isset($sortBy) && $sortBy === 'due_date') ? 'selected' : '' }}>Due Date</option>
                                     <option value="priority" {{ (isset($sortBy) && $sortBy === 'priority') ? 'selected' : '' }}>Priority Level</option>
                                 </select>
@@ -243,13 +243,13 @@
                             
                             <!-- Action Buttons -->
                             <div class="flex items-center space-x-2">
-                                <button type="submit" class="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-sm font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md">
+                                <button type="submit" class="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-black text-sm font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md">
                                     <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                                     </svg>
                                     Apply
                                 </button>
-                                <a href="{{ route('tasks.index') }}" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-200">
+                                <a href="{{ route('tasks.index') }}" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-black-300 text-sm font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-200">
                                     Clear
                                 </a>
                             </div>
@@ -320,6 +320,15 @@
                                                 <span class="px-3 py-1 text-xs font-semibold rounded-full shadow-md {{ $task->status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-white' : ($task->status === 'In Progress' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' : 'bg-gradient-to-r from-orange-400 to-red-500 text-white') }}">
                                                     {{ $task->status }}
                                                 </span>
+                                                
+                                                <!-- View Details Button -->
+                                                <a href="{{ route('tasks.show', $task) }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white text-sm font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                    </svg>
+                                                    View Details
+                                                </a>
                                                 
                                                 <!-- Edit Button (only for task creator) -->
                                                 @can('update', $task)

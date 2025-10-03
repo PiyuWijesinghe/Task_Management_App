@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\Postponement;
+use App\Models\TaskComment;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -195,8 +196,8 @@ class TaskController extends Controller
     {
         $this->authorize('view', $task);
         
-        // Load postponements with related data
-        $task->load(['postponements.postponedBy', 'assignedUsers', 'assignedUser']);
+        // Load postponements, comments, and related data
+        $task->load(['postponements.postponedBy', 'assignedUsers', 'assignedUser', 'comments.user']);
         
         return view('tasks.show', compact('task'));
     }
@@ -351,5 +352,40 @@ class TaskController extends Controller
     public function postponed()
     {
         return view('tasks.postponed');
+    }
+
+    /**
+     * Store a comment for the specified task.
+     */
+    public function storeComment(Request $request, Task $task)
+    {
+        $this->authorize('view', $task);
+        
+        $validated = $request->validate([
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        TaskComment::create([
+            'task_id' => $task->id,
+            'user_id' => auth()->user()->id,
+            'comment' => $validated['comment'],
+        ]);
+
+        return redirect()->back()->with('success', 'Comment added successfully!');
+    }
+
+    /**
+     * Delete a comment.
+     */
+    public function deleteComment(TaskComment $comment)
+    {
+        // Only allow the comment author or task owner to delete
+        if ($comment->user_id !== auth()->id() && $comment->task->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized to delete this comment.');
+        }
+
+        $comment->delete();
+
+        return redirect()->back()->with('success', 'Comment deleted successfully!');
     }
 }

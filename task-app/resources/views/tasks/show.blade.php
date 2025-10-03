@@ -2,7 +2,105 @@
     <div class="flex h-screen b                            </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Priority</h3>
-                                <span class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full {{ $task->getPriorityBadgeClasses() }}">
+                                <span class="inline-flex ite                        <!-- Comments Section -->
+                        <div class="border-t border-gray-200 dark:border-gray-600 pt-8 mt-8">
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+                                <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                    </svg>
+                                </div>
+                                Comments ({{ $task->comments->count() }})
+                            </h3>
+
+                            <!-- Add Comment Form -->
+                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 mb-6 border border-blue-200/50 dark:border-blue-600/30">
+                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Add a Comment</h4>
+                                <form action="{{ route('tasks.comments.store', $task) }}" method="POST">
+                                    @csrf
+                                    <div class="mb-4">
+                                        <textarea 
+                                            name="comment" 
+                                            rows="3" 
+                                            class="w-full px-4 py-3 bg-white/60 dark:bg-gray-700/60 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-black placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
+                                            placeholder="Share your thoughts, updates, or questions about this task..."
+                                            required>{{ old('comment') }}</textarea>
+                                        @error('comment')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-black text-sm font-medium rounded-lg hover:scale-105 transition-all duration-200 shadow-md">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                        </svg>
+                                        Add Comment
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Comments List -->
+                            @if($task->comments->count() > 0)
+                                <div class="space-y-4">
+                                    @foreach($task->comments as $comment)
+                                        <div class="bg-white/60 dark:bg-gray-700/60 rounded-xl p-6 border border-gray-200/50 dark:border-gray-600/50 hover:bg-white/80 dark:hover:bg-gray-600/80 transition-all duration-200">
+                                            <div class="flex items-start space-x-4">
+                                                <!-- User Avatar -->
+                                                <div class="flex-shrink-0">
+                                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                                                        {{ strtoupper(substr($comment->user->name, 0, 2)) }}
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Comment Content -->
+                                                <div class="flex-1">
+                                                    <div class="flex items-center space-x-2 mb-2">
+                                                        <h5 class="font-semibold text-gray-900 dark:text-white">{{ $comment->user->name }}</h5>
+                                                        @if($comment->user->username && $comment->user->username !== $comment->user->name)
+                                                            <span class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300 rounded-full font-medium">{{ $comment->user->username }}</span>
+                                                        @endif
+                                                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
+                                                    </div>
+                                                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{{ $comment->comment }}</p>
+                                                </div>
+                                                
+                                                <!-- Delete Button -->
+                                                @if($comment->user_id === auth()->id() || $task->user_id === auth()->id())
+                                                    <div class="flex-shrink-0">
+                                                        <form action="{{ route('comments.delete', $comment) }}" method="POST" 
+                                                              onsubmit="return confirm('Are you sure you want to delete this comment?');"
+                                                              class="inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors duration-200">
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                                </svg>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="text-center py-12 bg-gray-50/50 dark:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
+                                    <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                    </svg>
+                                    <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No comments yet</h4>
+                                    <p class="text-gray-500 dark:text-gray-400">Be the first to add a comment to this task!</p>
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Timestamps -->
+                        <div class="text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-600 pt-4 mt-8">
+                            <p>Created: {{ $task->created_at->format('M d, Y \a\t g:i A') }}</p>
+                            @if($task->updated_at != $task->created_at)
+                                <p>Last updated: {{ $task->updated_at->format('M d, Y \a\t g:i A') }}</p>
+                            @endif
+                        </div>er px-3 py-1 text-sm font-medium rounded-full {{ $task->getPriorityBadgeClasses() }}">
                                     {!! $task->getPriorityIcon() !!}
                                     {{ $task->getPriorityText() }}
                                 </span>
