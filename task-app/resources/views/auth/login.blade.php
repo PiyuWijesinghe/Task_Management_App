@@ -31,7 +31,7 @@
             @csrf
 
             <div class="form-group">
-                <label for="username">Email</label>
+                <label for="username">User Name</label>
                 <input id="username" type="text" name="username" value="{{ old('username') }}" required autofocus>
                 @error('username')
                     <div class="error">{{ $message }}</div>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Requests\TaskIndexRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -15,29 +16,33 @@ class TaskApiController extends Controller
     use AuthorizesRequests;
 
     /**
+     * Normalize incoming status value to canonical form.
+     * Accepts variations like pending, PENDING, in_progress, in-progress, completed etc.
+     */
+    private function normalizeStatus(?string $status): ?string
+    {
+        if (!$status) return null;
+        $s = trim(strtolower(str_replace(['-', '_'], ' ', $status)));
+        return match($s) {
+            'pending' => 'Pending',
+            'in progress', 'inprogress' => 'In Progress',
+            'completed', 'complete' => 'Completed',
+            default => $status, // Return original; validator will catch invalid
+        };
+    }
+
+    /**
      * Get tasks with filtering and sorting
      */
-    public function index(Request $request): JsonResponse
+    public function index(TaskIndexRequest $request): JsonResponse
     {
         try {
-            $user = $request->user();
-            
-            $validator = Validator::make($request->all(), [
-                'status' => 'sometimes|in:Pending,In Progress,Completed',
-                'priority' => 'sometimes|in:High,Medium,Low',
-                'sort_by' => 'sometimes|in:due_date,priority,created_at,title',
-                'sort_order' => 'sometimes|in:asc,desc',
-                'limit' => 'sometimes|integer|min:1|max:100',
-                'page' => 'sometimes|integer|min:1',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors()
-                ], 422);
+            $validated = $request->validated();
+            if (isset($validated['status'])) {
+                $validated['status'] = $this->normalizeStatus($validated['status']);
             }
+
+            $user = $request->user();
 
             // Base query for user's tasks
             $query = Task::query()
@@ -50,44 +55,97 @@ class TaskApiController extends Controller
                 })
                 ->with(['assignedUsers', 'assignedUser', 'user']);
 
-            // Apply filters
-            if ($request->has('status')) {
-                $query->where('status', $request->status);
+            // Filters
+            if (!empty($validated['status'] ?? null)) {
+                $query->where('status', $validated['status']);
+            }
+            if (!empty($validated['priority'] ?? null)) {
+                $query->where('priority', $validated['priority']);
+            }
+            if (!empty($validated['assigned_user_id'] ?? null)) {
+                $query->where(function($q) use ($validated) {
+                    $q->where('assigned_user_id', $validated['assigned_user_id'])
+                      ->orWhereHas('assignedUsers', function($aq) use ($validated) {
+                          $aq->where('user_id', $validated['assigned_user_id']);
+                      });
+                });
+            }
+            if (!empty($validated['creator_id'] ?? null)) {
+                $query->where('user_id', $validated['creator_id']);
+            }
+            if (!empty($validated['due_from'] ?? null)) {
+                $query->whereDate('due_date', '>=', $validated['due_from']);
+            }
+            if (!empty($validated['due_to'] ?? null)) {
+                $query->whereDate('due_date', '<=', $validated['due_to']);
+            }
+            if (!empty($validated['created_from'] ?? null)) {
+                $query->whereDate('created_at', '>=', $validated['created_from']);
+            }
+            if (!empty($validated['created_to'] ?? null)) {
+                $query->whereDate('created_at', '<=', $validated['created_to']);
+            }
+            if (!empty($validated['q'] ?? null)) {
+                $qTerm = $validated['q'];
+                $query->where(function($sub) use ($qTerm) {
+                    $sub->where('title', 'LIKE', "%{$qTerm}%")
+                        ->orWhere('description', 'LIKE', "%{$qTerm}%");
+                });
             }
 
-            if ($request->has('priority')) {
-                $query->where('priority', $request->priority);
-            }
+            // Sorting
+            $sortBy = $validated['sort_by'] ?? 'due_date';
+            $sortDir = $validated['sort_dir'] ?? 'asc';
 
-            // Apply sorting
-            $sortBy = $request->get('sort_by', 'due_date');
-            $sortOrder = $request->get('sort_order', 'asc');
-
-            if ($sortBy === 'priority') {
+            if ($sortBy === 'priority' || $sortBy === 'priority_order') {
                 $query->orderByRaw("CASE 
                     WHEN priority = 'High' THEN 1 
                     WHEN priority = 'Medium' THEN 2 
                     WHEN priority = 'Low' THEN 3 
-                    ELSE 4 END " . ($sortOrder === 'desc' ? 'DESC' : 'ASC'));
+                    ELSE 4 END " . ($sortDir === 'desc' ? 'DESC' : 'ASC'));
+            } else if ($sortBy === 'status') {
+                $query->orderByRaw("CASE 
+                    WHEN status = 'Pending' THEN 1 
+                    WHEN status = 'In Progress' THEN 2 
+                    WHEN status = 'Completed' THEN 3 
+                    ELSE 4 END " . ($sortDir === 'desc' ? 'DESC' : 'ASC'));
             } else {
-                $query->orderBy($sortBy, $sortOrder);
+                $query->orderBy($sortBy, $sortDir);
             }
 
-            // Pagination
-            $limit = $request->get('limit', 15);
-            $tasks = $query->paginate($limit);
+            // Secondary ordering for consistency
+            if ($sortBy !== 'created_at') {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $perPage = $validated['per_page'] ?? 15;
+            $page = $validated['page'] ?? null; // paginator will read current page from request if null
+            $tasks = $query->paginate($perPage, ['*'], 'page', $page);
 
             return response()->json([
                 'success' => true,
                 'data' => [
                     'tasks' => $tasks->items(),
-                    'pagination' => [
+                    'meta' => [
                         'current_page' => $tasks->currentPage(),
                         'last_page' => $tasks->lastPage(),
                         'per_page' => $tasks->perPage(),
                         'total' => $tasks->total(),
                         'from' => $tasks->firstItem(),
                         'to' => $tasks->lastItem(),
+                        'sort_by' => $sortBy,
+                        'sort_dir' => $sortDir,
+                        'filters' => array_filter([
+                            'status' => $validated['status'] ?? null,
+                            'priority' => $validated['priority'] ?? null,
+                            'assigned_user_id' => $validated['assigned_user_id'] ?? null,
+                            'creator_id' => $validated['creator_id'] ?? null,
+                            'due_from' => $validated['due_from'] ?? null,
+                            'due_to' => $validated['due_to'] ?? null,
+                            'created_from' => $validated['created_from'] ?? null,
+                            'created_to' => $validated['created_to'] ?? null,
+                            'q' => $validated['q'] ?? null,
+                        ])
                     ]
                 ]
             ], 200);
@@ -107,10 +165,14 @@ class TaskApiController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
+            if ($request->has('status')) {
+                $request->merge(['status' => $this->normalizeStatus($request->get('status'))]);
+            }
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 'due_date' => 'nullable|date|after_or_equal:today',
+                'status' => 'sometimes|in:Pending,In Progress,Completed',
                 'priority' => 'sometimes|in:High,Medium,Low',
                 'assigned_user_id' => 'nullable|exists:users,id',
                 'assigned_users' => 'nullable|array',
@@ -129,6 +191,7 @@ class TaskApiController extends Controller
                 'title' => $request->title,
                 'description' => $request->description,
                 'due_date' => $request->due_date,
+                'status' => $request->get('status', 'Pending'),
                 'priority' => $request->get('priority', 'Medium'),
                 'user_id' => $request->user()->id,
                 'assigned_user_id' => $request->assigned_user_id,
@@ -202,6 +265,10 @@ class TaskApiController extends Controller
                     'success' => false,
                     'message' => 'You do not have permission to update this task'
                 ], 403);
+            }
+
+            if ($request->has('status')) {
+                $request->merge(['status' => $this->normalizeStatus($request->get('status'))]);
             }
 
             $validator = Validator::make($request->all(), [
@@ -294,6 +361,10 @@ class TaskApiController extends Controller
                     'success' => false,
                     'message' => 'You do not have permission to update this task status'
                 ], 403);
+            }
+
+            if ($request->has('status')) {
+                $request->merge(['status' => $this->normalizeStatus($request->get('status'))]);
             }
 
             $validator = Validator::make($request->all(), [
