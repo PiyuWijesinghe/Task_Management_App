@@ -1,0 +1,154 @@
+{
+  "info": {
+    "_postman_id": "b6c4c2d4-6f5d-4c2f-9e3c-1234567890ab",
+    "name": "Task Management API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection to test enhanced task listing with pagination, sorting, and filtering."
+  },
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Demo User\",\n  \"username\": \"demouser\",\n  \"email\": \"demo+{{timestamp}}@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/register",
+          "host": ["{{base_url}}"],
+          "path": ["api","v1","auth","register"]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.collectionVariables.set('timestamp', Date.now());"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth - Login (username)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"login\": \"demouser\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["api","v1","auth","login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.success && json.data && json.data.token) {",
+              "  pm.collectionVariables.set('auth_token', json.data.token);",
+              "  console.log('Token stored.');",
+              "} else {",
+              "  console.warn('Token not found in response.');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tasks - Create Sample Task",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+        ],
+        "body": {
+            "mode": "raw",
+            "raw": "{\n  \"title\": \"Write sprint report\",\n  \"description\": \"Generate weekly metrics\",\n  \"priority\": \"High\",\n  \"due_date\": \"2025-10-15\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/v1/tasks",
+          "host": ["{{base_url}}"],
+          "path": ["api","v1","tasks"]
+        }
+      }
+    },
+    {
+      "name": "Tasks - Basic List",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/tasks",
+          "host": ["{{base_url}}"],
+          "path": ["api","v1","tasks"]
+        }
+      }
+    },
+    {
+      "name": "Tasks - Pagination Page 2",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/tasks?per_page=5&page=2",
+          "host": ["{{base_url}}"],
+          "path": ["api","v1","tasks"],
+          "query": [
+            { "key": "per_page", "value": "5" },
+            { "key": "page", "value": "2" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Tasks - Filter Status & Priority",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/v1/tasks?status=Pending&priority=High",
+          "host": ["{{base_url}}"],
+          "path": ["api","v1","tasks"],
+          "query": [
+            { "key": "status", "value": "Pending" },
+            { "key": "priority", "value": "High" }
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000" },
+    { "key": "auth_token", "value": "" },
+    { "key": "timestamp", "value": "" }
+  ]
+}

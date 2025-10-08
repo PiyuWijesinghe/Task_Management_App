@@ -146,75 +146,46 @@ POST /auth/change-password
 
 ## Task Management Endpoints
 
-### Get Tasks (Enhanced Listing with Pagination, Sorting & Filtering)
+### Get Tasks (Basic Listing)
 ```
 GET /tasks
 ```
 *Requires Authentication*
 
-**Query Parameters (all optional):**
+**Query Parameters (optional):**
+- `status`: Filter by status (`Pending`, `In Progress`, `Completed`)
+- `priority`: Filter by priority (`High`, `Medium`, `Low`)
+- `sort_by`: `due_date`, `priority`, `created_at`, or `title` (default: `due_date`)
+- `sort_order`: `asc` or `desc` (default: `asc`)
+- `limit`: Items per page (default: 15, max: 100)
 - `page`: Page number (default: 1)
-- `per_page`: Items per page (default: 15, max: 100)
-- `sort_by`: One of `due_date`, `priority`, `priority_order`, `created_at`, `title`, `status` (default: `due_date`)
-- `sort_dir`: `asc` or `desc` (default: `asc`)
-- `status`: `Pending`, `In Progress`, `Completed`
-- `priority`: `High`, `Medium`, `Low`
-- `assigned_user_id`: Filter tasks where the user is primary or additional assignee
-- `creator_id`: Filter tasks created by a specific user
-- `due_from`: Start of due date range (YYYY-MM-DD)
-- `due_to`: End of due date range (YYYY-MM-DD)
-- `created_from`: Start of creation date range (YYYY-MM-DD)
-- `created_to`: End of creation date range (YYYY-MM-DD)
-- `q`: Search term applied to title & description (partial match)
 
-**Notes:**
-- `priority_order` is an alias for sorting by priority weight (High → Medium → Low).
-- When sorting by `priority` descending, order reverses the weighted list.
-- Secondary ordering by `created_at desc` is automatically applied (except when `sort_by=created_at`).
-
-**Example Requests:**
-```
-GET /tasks?status=Pending&priority=High&sort_by=priority&sort_dir=asc
-GET /tasks?q=report&due_from=2025-10-01&due_to=2025-10-31&per_page=50
-GET /tasks?assigned_user_id=7&sort_by=created_at&sort_dir=desc
-```
-
-**Successful Response:**
+**Successful Response (basic format):**
 ```json
 {
     "success": true,
     "data": {
         "tasks": [
             {
-                "id": 42,
-                "title": "Prepare sprint report",
-                "description": "Compile metrics for sprint 12",
+                "id": 1,
+                "title": "Example Task",
+                "description": "Description here",
                 "due_date": "2025-10-15",
                 "status": "Pending",
-                "priority": "High",
-                "user_id": 3,
-                "assigned_user_id": 7,
+                "priority": "Medium",
+                "user_id": 1,
+                "assigned_user_id": null,
                 "created_at": "2025-10-08T09:15:24.000000Z",
-                "updated_at": "2025-10-08T09:15:24.000000Z",
-                "assigned_user": { /* eager-loaded primary assignee */ },
-                "assigned_users": [ /* additional assignees */ ],
-                "user": { /* creator */ }
+                "updated_at": "2025-10-08T09:15:24.000000Z"
             }
         ],
-        "meta": {
+        "pagination": {
             "current_page": 1,
-            "last_page": 3,
+            "last_page": 1,
             "per_page": 15,
-            "total": 32,
+            "total": 1,
             "from": 1,
-            "to": 15,
-            "sort_by": "due_date",
-            "sort_dir": "asc",
-            "filters": {
-                "status": "Pending",
-                "priority": "High",
-                "q": "report"
-            }
+            "to": 1
         }
     }
 }
