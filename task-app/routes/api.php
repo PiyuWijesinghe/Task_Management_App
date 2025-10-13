@@ -14,6 +14,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/register', [AuthApiController::class, 'register']);
         Route::post('/login', [AuthApiController::class, 'login']);
+        Route::options('/login', [AuthApiController::class, 'login']); // Handle preflight
         Route::post('/forgot-password', [AuthApiController::class, 'forgotPassword']);
         Route::post('/reset-password', [AuthApiController::class, 'resetPassword']);
     });
