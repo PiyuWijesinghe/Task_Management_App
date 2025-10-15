@@ -233,123 +233,343 @@ npm run eject                   # Eject CRA config
 
 ##  API Endpoints Reference
 
-**Base URL:** `http://localhost:8000/api/v1`
+1.	User registration
+POST   /api/auth/register  
 
-###  Authentication Endpoints
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `/auth/register` | User registration | ❌ |
-| `POST` | `/auth/login` | User authentication | ❌ |
-| `POST` | `/auth/forgot-password` | Password reset request | ❌ |
-| `POST` | `/auth/reset-password` | Password reset | ❌ |
-| `GET` | `/auth/user` | Get authenticated user | ✅ |
-| `POST` | `/auth/logout` | Single session logout | ✅ |
-| `POST` | `/auth/logout-all` | All sessions logout | ✅ |
-| `PATCH` | `/auth/update-profile` | Update user profile | ✅ |
-| `POST` | `/auth/change-password` | Change password | ✅ |
+Request:
+{
+  "name": "John",
+  "username": "john_doe",
+  "email": "john@doe.com",
+  "password": "john@123!",
+  "password_confirmation": "john@123!"
+}
 
-###  User Management Endpoints
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/users` | List all users | ✅ |
-| `GET` | `/users/search` | Search users | ✅ |
-| `GET` | `/users/{user}` | Get specific user | ✅ |
-| `PUT` | `/users/{user}` | Update user (admin) | ✅ |
-| `DELETE` | `/users/{user}` | Delete user (admin) | ✅ |
+Response:
+{
+  "success": true,
+  "message": "User registered successfully",
+  "data": {
+    "user": {
+      "id": 1,
+      "name": "John Doe",
+      "username": "john_doe",
+      "email": "john@example.com",
+      "created_at": "2025-10-14T10:30:45.000000Z"
+    },
+    "token": "1|abc123def456ghi789jkl012mno345pqr678stu901vwx234yz",
+    "token_type": "Bearer"
+  }
+}
 
-### Task Management Endpoints
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/tasks` | List user tasks with filters | ✅ |
-| `POST` | `/tasks` | Create new task | ✅ |
-| `GET` | `/tasks/{task}` | Get specific task | ✅ |
-| `PUT` | `/tasks/{task}` | Update task | ✅ |
-| `DELETE` | `/tasks/{task}` | Delete task | ✅ |
-| `PATCH` | `/tasks/{task}/status` | Update task status | ✅ |
-| `PATCH` | `/tasks/{task}/complete` | Mark as completed | ✅ |
-| `PATCH` | `/tasks/{task}/priority` | Update priority | ✅ |
+2.	User authentication
+POST   /api/auth/login
 
-### Task Assignment Endpoints
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `/tasks/{task}/assign` | Assign user to task | ✅ |
-| `DELETE` | `/tasks/{task}/unassign/{user}` | Unassign user | ✅ |
-| `GET` | `/tasks/{task}/assignees` | Get task assignees | ✅ |
+Request:
+{
+"username": "Sanjeewa",
+"password":"sanjeewa123"
+}
 
-### Comment Management Endpoints
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/tasks/{task}/comments` | Get task comments | ✅ |
-| `POST` | `/tasks/{task}/comments` | Add comment | ✅ |
-| `PUT` | `/comments/{comment}` | Update comment | ✅ |
-| `DELETE` | `/comments/{comment}` | Delete comment | ✅ |
-| `GET` | `/comments/{comment}` | Get specific comment | ✅ |
+Response:
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "id": 2,
+      "name": "Sanjeewa",
+      "username": "Sanjeewa",
+      "email": "sanjeewa@example.com",
+      "created_at": "2025-10-14T09:15:30.000000Z"
+    },
+    "token": "2|xyz789abc123def456ghi012jkl345mno678pqr901stu234vwx",
+    "token_type": "Bearer"
+  }
+}
 
-### Task Operations & Analytics
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `/tasks/{task}/postpone` | Postpone task | ✅ |
-| `GET` | `/tasks/{task}/postponements` | Postponement history | ✅ |
-| `GET` | `/tasks/dashboard` | Dashboard data | ✅ |
-| `GET` | `/tasks/statistics` | Task statistics | ✅ |
-| `GET` | `/tasks/overdue` | Overdue tasks | ✅ |
-| `GET` | `/tasks/due-today` | Tasks due today | ✅ |
-| `GET` | `/tasks/postponed` | Postponed tasks | ✅ |
+3.	Logout
+POST  /api/auth/logout 
 
-### Search & Bulk Operations
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/search/tasks` | Search tasks | ✅ |
-| `GET` | `/search/users` | Search users | ✅ |
-| `POST` | `/bulk/tasks/complete` | Complete multiple tasks | ✅ |
-| `POST` | `/bulk/tasks/delete` | Delete multiple tasks | ✅ |
-| `POST` | `/bulk/tasks/assign` | Assign multiple tasks | ✅ |
-| `POST` | `/bulk/tasks/update-priority` | Update priority bulk | ✅ |
+Response:
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
 
-### Reports & Analytics
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/reports/tasks/summary` | Task summary report | ✅ |
-| `GET` | `/reports/user/activity` | User activity report | ✅ |
-| `GET` | `/reports/productivity` | Productivity metrics | ✅ |
+4.	Update Profile
+PATCH  /api/auth/update-profile 
 
-## Application Routes
+Request:
+{
+  "name": "John Updated",
+  "username": "john_updated",
+  "email": "john.updated@example.com"
+}
 
-### Authentication Routes
-- `GET /` - Redirects to login page
-- `GET /login` - Login form display
-- `POST /login` - Process user login
-- `POST /logout` - User logout
-- `GET /register` - Registration form
-- `POST /register` - Process user registration
+Response:
+{
+  "success": true,
+  "message": "Profile updated successfully",
+  "data": {
+    "user": {
+      "id": 1,
+      "name": "John Updated",
+      "username": "john_updated",
+      "email": "john.updated@example.com",
+      "created_at": "2025-10-14T10:30:45.000000Z"
+    }
+  }
+}
 
-### Protected Routes (Require Authentication)
 
-#### Dashboard & Task Management
-- `GET /dashboard` - Main dashboard with task overview and statistics
-- `GET /tasks` - List tasks with filtering and sorting options
-- `GET /tasks/create` - Task creation form with user assignment
-- `POST /tasks` - Store new task with validation
-- `GET /tasks/{id}` - Display specific task with comments
-- `GET /tasks/{id}/edit` - Edit task form
-- `PUT /tasks/{id}` - Update task
-- `DELETE /tasks/{id}` - Delete task
-- `PATCH /tasks/{id}/complete` - Mark task as completed
+5.	Get All Tasks
+GET /api/tasks 
 
-#### Task Assignment & Management
-- `GET /tasks-assign` - Multi-user task assignment interface
-- `PATCH /tasks/{id}/assign` - Assign task to multiple users
-- `POST /tasks/{id}/postpone` - Postpone task with reason
-- `GET /tasks-postponed` - View postponed tasks
+Response:
+{
+  "success": true,
+  "message": "Tasks retrieved successfully",
+  "data": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Complete Project Documentation",
+        "description": "Write comprehensive documentation for the project",
+        "status": "Pending",
+        "priority": "High",
+        "due_date": "2025-10-20",
+        "user_id": 1,
+        "assigned_user_id": 2,
+        "created_at": "2025-10-14T10:30:45.000000Z",
+        "updated_at": "2025-10-14T10:30:45.000000Z",
+        "user": {
+          "id": 1,
+          "name": "John Doe",
+          "username": "john_doe"
+        },
+        "assigned_users": [
+          {
+            "id": 2,
+            "name": "Jane Smith",
+            "username": "jane_smith"
+          }
+        ]
+      }
+    ],
+    "pagination": {
+      "current_page": 1,
+      "last_page": 5,
+      "per_page": 10,
+      "total": 45
+    }
+  }
+}
 
-#### Comment System
-- `POST /tasks/{id}/comments` - Add comment to task
-- `DELETE /comments/{id}` - Delete comment (with authorization)
+6.	Create task
+POST  /api/tasks
 
-#### User Profile
-- `GET /profile` - User profile management
-- `PATCH /profile` - Update user profile
-- `DELETE /profile` - Delete user account
+Request:
+{
+  "title": "Complete API Documentation",
+  "description": "Create comprehensive API documentation with examples",
+  "priority": "High",
+  "due_date": "2025-10-25",
+  "assigned_user_id": 3
+}
+
+Response:
+{
+  "success": true,
+  "message": "Task created successfully",
+  "data": {
+    "task": {
+      "id": 5,
+      "title": "Complete API Documentation",
+      "description": "Create comprehensive API documentation with examples",
+      "status": "Pending",
+      "priority": "High",
+      "due_date": "2025-10-25",
+      "user_id": 1,
+      "assigned_user_id": 3,
+      "created_at": "2025-10-14T11:45:30.000000Z",
+      "updated_at": "2025-10-14T11:45:30.000000Z"
+    }
+  }
+}
+
+
+7.	Update Task
+PUT /api/tasks/{task_id} 
+
+Request:
+{
+  "title": "Updated Task Title",
+  "description": "Updated description",
+  "priority": "Medium",
+  "status": "In Progress",
+  "due_date": "2025-10-28",
+  "assigned_user_id": 4
+}
+
+8.	Delete Task
+DELETE /api/tasks/{task_id}
+
+Response:
+{
+  "success": true,
+  "message": "Task deleted successfully"
+}
+
+
+
+9.	Update Task Status
+PATCH  /api/tasks/{task_id}/status
+
+Request:
+{
+  "status": "Completed"
+}
+
+Response :
+{
+  "success": true,
+  "message": "Task marked as completed",
+  "data": {
+    "task": {
+      "id": 1,
+      "status": "Completed",
+      "completed_at": "2025-10-14T15:30:00.000000Z"
+    }
+  }
+}
+
+10.	Update Task Priority
+PATCH  /api/tasks/{task_id}/priority
+
+Request:
+{
+  "priority": "Low"
+}
+
+11.	Assign User to Task
+POST /api/tasks/{task_id}/assign
+
+Request:
+{
+  "username": "demo" 
+  }
+
+Response:
+{
+    "success": true,
+    "message": "User assigned to task successfully",
+    "data": {
+        "task": {
+            "id": 9,
+            "title": "Implement notification system",
+            "description": "Add email + in-app notifications for task status changes. Cover create/update/assign events.",
+            "due_date": "2025-10-20T00:00:00.000000Z",
+            "status": "Pending",
+            "user_id": 3,
+            "created_at": "2025-10-10T10:39:36.000000Z",
+            "updated_at": "2025-10-13T14:30:04.000000Z",
+            "assigned_user_id": null,
+            "priority": "Medium",
+            "assigned_users": [
+                {
+                    "id": 5,
+                    "name": "Admin User",
+                    "email": "admin@example.com",
+                    "email_verified_at": null,
+                    "created_at": "2025-10-10T11:08:05.000000Z",
+                    "updated_at": "2025-10-10T11:08:05.000000Z",
+                    "username": "admin",
+                    "pivot": {
+                        "task_id": 9,
+                        "user_id": 5,
+                        "created_at": "2025-10-10T11:18:32.000000Z",
+                        "updated_at": "2025-10-10T11:18:32.000000Z"
+                    }
+                },
+                {
+                    "id": 6,
+                    "name": "Demo User",
+                    "email": "demo@example.com",
+                    "email_verified_at": null,
+                    "created_at": "2025-10-10T11:08:05.000000Z",
+                    "updated_at": "2025-10-10T11:08:05.000000Z",
+                    "username": "demo",
+                    "pivot": {
+                        "task_id": 9,
+                        "user_id": 6,
+                        "created_at": "2025-10-10T11:56:12.000000Z",
+                        "updated_at": "2025-10-10T11:56:12.000000Z"
+                    }
+                }
+            ],
+            "assigned_user": null
+        }
+    }
+}
+
+
+12.	Add Comment to Task
+POST /api/tasks/{task_id}/comments
+
+Request:
+{
+  "comment": "This is a comment on the task progress"
+}
+ Response:
+{
+  "success": true,
+  "message": "Comment added successfully",
+  "data": {
+    "comment": {
+      "id": 5,
+      "comment": "This is a comment on the task progress",
+      "task_id": 1,
+      "user_id": 1,
+      "created_at": "2025-10-14T16:30:00.000000Z",
+      "updated_at": "2025-10-14T16:30:00.000000Z"
+    }
+  }
+
+13.	Postpone Task
+POST /tasks/{task_id}/postpone
+
+Request:
+{
+  "new_due_date": "2025-10-30",
+  "reason": "Need more time for research"
+}
+
+Response:
+{
+  "success": true,
+  "message": "Task postponed successfully",
+  "data": {
+    "postponement": {
+      "id": 1,
+      "task_id": 1,
+      "original_due_date": "2025-10-20",
+      "new_due_date": "2025-10-30",
+      "reason": "Need more time for research",
+      "user_id": 1,
+      "created_at": "2025-10-14T17:00:00.000000Z"
+    }
+  }
+}
+
+14.	Filtering 
+GET /api/tasks?status=in progress
+
+15.	Pagination
+GET /api/tasks?page=1
+
+16.	Sorting
+GET /api/tasks?sort=priority&order=asc
 
 
 ## Development
