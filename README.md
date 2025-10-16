@@ -571,7 +571,90 @@ GET /api/tasks?page=1
 16.	Sorting
 GET /api/tasks?sort=priority&order=asc
 
+**##File Attachment Endpoints**
+Get task attachments
+| `GET` | `/tasks/{task}/attachments` |
+Upload file to task
+| `POST` | `/tasks/{task}/attachments` |
+Download attachment
+| `GET` | `/tasks/{task}/attachments/{attachment}/download` |
+Delete attachment
+| `DELETE` | `/tasks/{task}/attachments/{attachment}` |
 
+## File Handling & Attachments System
+
+The Task Management App includes a comprehensive file attachment system that allows users to upload, download, and manage files associated with tasks. This system implements secure file handling with proper authorization and audit trails.
+
+### Security Features
+
+#### File Upload Security
+- **File Type Validation**: Only allowed file extensions accepted
+- **Size Limitations**: Configurable maximum file size limits
+- **Virus Scanning**: Integration ready for antivirus scanning
+- **Secure Storage**: Files stored outside web root
+- **Unique Naming**: UUID-based file naming to prevent conflicts
+
+#### Authorization & Access Control
+- **Upload Permissions**: Only task assignees/owners can upload
+- **Download Permissions**: Access controlled via secure middleware  
+- **Delete Permissions**: Only uploader or task owner can delete
+- **Audit Logging**: All file operations logged for security
+
+### File Handling Best Practices
+
+#### Upload Guidelines
+- **File Size Limits**: Recommend 10MB maximum per file
+- **Batch Uploads**: Support multiple files in single request
+- **Progress Indicators**: Show upload progress to users
+- **Error Handling**: Clear error messages for failed uploads
+- **File Validation**: Client and server-side validation
+
+#### Storage Management  
+- **Regular Cleanup**: Remove orphaned files periodically
+- **Backup Strategy**: Include file attachments in backups
+- **Disk Space Monitoring**: Alert when storage approaches limits
+- **Archive Policy**: Define retention periods for attachments
+
+#### Security Recommendations
+- **Regular Audits**: Review file access logs regularly  
+- **Antivirus Integration**: Scan uploaded files for malware
+- **Access Logging**: Log all file operations for compliance
+- **Secure URLs**: Use temporary signed URLs for downloads
+- **File Encryption**: Consider encrypting sensitive files at rest
+
+### Troubleshooting File Issues
+
+#### Common Problems & Solutions
+
+**1. Upload Failures**
+```bash
+# Check file permissions
+chmod -R 775 storage/app/
+chown -R www-data:www-data storage/
+
+# Verify PHP upload limits
+php -i | grep upload_max_filesize
+php -i | grep post_max_size
+```
+
+**2. Download Issues**
+```bash
+# Check secure download middleware
+php artisan route:list | grep download
+
+# Verify file exists
+php artisan tinker
+>>> Storage::exists('task-attachments/filename.pdf')
+```
+
+**3. Permission Errors**
+```bash
+# Check file ownership
+ls -la storage/app/task-attachments/
+
+# Fix permissions
+sudo chown -R www-data:www-data storage/
+sud  
 ## Development
 
 ### Running Tests
