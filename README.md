@@ -1069,6 +1069,85 @@ npm run format                     # Format code with Prettier
 - **Mass Assignment Protection**: Eloquent fillable attributes
 - **Policy Authorization**: Resource-based access control
 
+  ## Exporting Reports & Export Feature
+
+This application includes an export feature that lets you generate reports and download them in CSV, PDF, or JSON formats. Use the Web UI for ad-hoc exports, the API for automation/integration, or the Artisan CLI for scheduled/export tasks.
+
+### Web UI (Interactive)
+- Navigate to the Dashboard -> Reports (or click the "Reports" button in the sidebar).
+- Choose a report type (e.g. "Tasks Summary", "User Activity", "Productivity").
+- Use the filters (date range, users, status, priority) to narrow results.
+- Select an output format from the "Format" dropdown: CSV, PDF, or JSON.
+- Click "Export". A file will be generated and a download will begin automatically. Exports are also retained under `storage/app/exports/` for a limited time.
+
+Tip: For large result sets prefer CSV or JSON to avoid long PDF generation times.
+
+### API Usage (Programmatic)
+Endpoint (example):
+
+GET /api/v1/reports/tasks/summary
+
+Query parameters:
+- `format` — csv | pdf | json (default: json)
+- `start` — start date (YYYY-MM-DD)
+- `end` — end date (YYYY-MM-DD)
+- filter params — any supported filters (user_id, status, priority)
+
+Example curl (CSV):
+
+```bash
+curl -sS -X GET "http://localhost:8000/api/v1/reports/tasks/summary?format=csv&start=2025-01-01&end=2025-10-21" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Accept: text/csv" -o tasks-summary-2025-01-01_to_2025-10-21.csv
+```
+
+Notes:
+- For `format=pdf` the response will be a binary PDF stream (Content-Type: application/pdf).
+- For `format=csv` the response will be a CSV file (Content-Type: text/csv; charset=utf-8) and usually includes a `Content-Disposition: attachment; filename="tasks-summary-YYYY-MM-DD.csv"` header.
+- For `format=json` you'll receive a JSON object with the report data, suitable for further processing.
+
+Sample JSON response (truncated):
+
+```json
+{
+  "success": true,
+  "report": "tasks_summary",
+  "meta": { "start": "2025-01-01", "end": "2025-10-21", "count": 123 },
+  "data": [
+    { "task_id": 1, "title": "Draft README", "assigned_to": [2], "priority": "High", "status": "Completed" },
+    { "task_id": 2, "title": "Design UI", "assigned_to": [3,4], "priority": "Medium", "status": "In Progress" }
+  ]
+}
+```
+
+### Artisan CLI (Scheduled / Server-side)
+There is an Artisan command for server-side exports suitable for cron jobs or background tasks. Example usage:
+
+```bash
+php artisan reports:export tasks \ 
+  --format=csv \ 
+  --start=2025-01-01 \ 
+  --end=2025-10-21 \ 
+  --output=storage/app/exports/tasks-summary-2025-01-01_to_2025-10-21.csv
+```
+
+The command will write the exported file to `storage/app/exports/` (or the path you pass) and will print the created file path on success. You can then move, archive, or serve that file as needed.
+
+### Supported Formats & Storage
+- CSV — best for spreadsheets and bulk data processing
+- JSON — best for integrations and programmatic consumption
+- PDF — best for printable human-readable reports
+
+Exports are stored temporarily in `storage/app/exports/`. Make sure the `storage` directory is writable and add regular cleanup (cron job) if you generate many files.
+
+### Documentation & Advanced Options
+For full report generation options (detailed filters, scheduled exports, and examples) see `HOW_TO_GENERATE_TASK_REPORTS.html` in the repository root.
+
+### Troubleshooting
+- If export fails with a permissions error, ensure `storage/app/exports` is writable by the webserver/CLI user.
+- For timeouts on large PDF exports, increase PHP execution time or generate reports server-side via Artisan and stream to users.
+- If the API returns `403`, verify your token has permission to access reports.
+
 ---
 
 ### License
