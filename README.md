@@ -233,125 +233,428 @@ npm run eject                   # Eject CRA config
 
 ##  API Endpoints Reference
 
-**Base URL:** `http://localhost:8000/api/v1`
+1.	User registration
+POST   /api/auth/register  
 
-###  Authentication Endpoints
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `/auth/register` | User registration | ❌ |
-| `POST` | `/auth/login` | User authentication | ❌ |
-| `POST` | `/auth/forgot-password` | Password reset request | ❌ |
-| `POST` | `/auth/reset-password` | Password reset | ❌ |
-| `GET` | `/auth/user` | Get authenticated user | ✅ |
-| `POST` | `/auth/logout` | Single session logout | ✅ |
-| `POST` | `/auth/logout-all` | All sessions logout | ✅ |
-| `PATCH` | `/auth/update-profile` | Update user profile | ✅ |
-| `POST` | `/auth/change-password` | Change password | ✅ |
+Request:
+{
+  "name": "John",
+  "username": "john_doe",
+  "email": "john@doe.com",
+  "password": "john@123!",
+  "password_confirmation": "john@123!"
+}
 
-###  User Management Endpoints
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/users` | List all users | ✅ |
-| `GET` | `/users/search` | Search users | ✅ |
-| `GET` | `/users/{user}` | Get specific user | ✅ |
-| `PUT` | `/users/{user}` | Update user (admin) | ✅ |
-| `DELETE` | `/users/{user}` | Delete user (admin) | ✅ |
+Response:
+{
+  "success": true,
+  "message": "User registered successfully",
+  "data": {
+    "user": {
+      "id": 1,
+      "name": "John Doe",
+      "username": "john_doe",
+      "email": "john@example.com",
+      "created_at": "2025-10-14T10:30:45.000000Z"
+    },
+    "token": "1|abc123def456ghi789jkl012mno345pqr678stu901vwx234yz",
+    "token_type": "Bearer"
+  }
+}
 
-### Task Management Endpoints
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/tasks` | List user tasks with filters | ✅ |
-| `POST` | `/tasks` | Create new task | ✅ |
-| `GET` | `/tasks/{task}` | Get specific task | ✅ |
-| `PUT` | `/tasks/{task}` | Update task | ✅ |
-| `DELETE` | `/tasks/{task}` | Delete task | ✅ |
-| `PATCH` | `/tasks/{task}/status` | Update task status | ✅ |
-| `PATCH` | `/tasks/{task}/complete` | Mark as completed | ✅ |
-| `PATCH` | `/tasks/{task}/priority` | Update priority | ✅ |
+2.	User authentication
+POST   /api/auth/login
 
-### Task Assignment Endpoints
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `/tasks/{task}/assign` | Assign user to task | ✅ |
-| `DELETE` | `/tasks/{task}/unassign/{user}` | Unassign user | ✅ |
-| `GET` | `/tasks/{task}/assignees` | Get task assignees | ✅ |
+Request:
+{
+"username": "Sanjeewa",
+"password":"sanjeewa123"
+}
 
-### Comment Management Endpoints
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/tasks/{task}/comments` | Get task comments | ✅ |
-| `POST` | `/tasks/{task}/comments` | Add comment | ✅ |
-| `PUT` | `/comments/{comment}` | Update comment | ✅ |
-| `DELETE` | `/comments/{comment}` | Delete comment | ✅ |
-| `GET` | `/comments/{comment}` | Get specific comment | ✅ |
+Response:
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "id": 2,
+      "name": "Sanjeewa",
+      "username": "Sanjeewa",
+      "email": "sanjeewa@example.com",
+      "created_at": "2025-10-14T09:15:30.000000Z"
+    },
+    "token": "2|xyz789abc123def456ghi012jkl345mno678pqr901stu234vwx",
+    "token_type": "Bearer"
+  }
+}
 
-### Task Operations & Analytics
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `/tasks/{task}/postpone` | Postpone task | ✅ |
-| `GET` | `/tasks/{task}/postponements` | Postponement history | ✅ |
-| `GET` | `/tasks/dashboard` | Dashboard data | ✅ |
-| `GET` | `/tasks/statistics` | Task statistics | ✅ |
-| `GET` | `/tasks/overdue` | Overdue tasks | ✅ |
-| `GET` | `/tasks/due-today` | Tasks due today | ✅ |
-| `GET` | `/tasks/postponed` | Postponed tasks | ✅ |
+3.	Logout
+POST  /api/auth/logout 
 
-### Search & Bulk Operations
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/search/tasks` | Search tasks | ✅ |
-| `GET` | `/search/users` | Search users | ✅ |
-| `POST` | `/bulk/tasks/complete` | Complete multiple tasks | ✅ |
-| `POST` | `/bulk/tasks/delete` | Delete multiple tasks | ✅ |
-| `POST` | `/bulk/tasks/assign` | Assign multiple tasks | ✅ |
-| `POST` | `/bulk/tasks/update-priority` | Update priority bulk | ✅ |
+Response:
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
 
-### Reports & Analytics
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `/reports/tasks/summary` | Task summary report | ✅ |
-| `GET` | `/reports/user/activity` | User activity report | ✅ |
-| `GET` | `/reports/productivity` | Productivity metrics | ✅ |
+4.	Update Profile
+PATCH  /api/auth/update-profile 
 
-## Application Routes
+Request:
+{
+  "name": "John Updated",
+  "username": "john_updated",
+  "email": "john.updated@example.com"
+}
 
-### Authentication Routes
-- `GET /` - Redirects to login page
-- `GET /login` - Login form display
-- `POST /login` - Process user login
-- `POST /logout` - User logout
-- `GET /register` - Registration form
-- `POST /register` - Process user registration
-
-### Protected Routes (Require Authentication)
-
-#### Dashboard & Task Management
-- `GET /dashboard` - Main dashboard with task overview and statistics
-- `GET /tasks` - List tasks with filtering and sorting options
-- `GET /tasks/create` - Task creation form with user assignment
-- `POST /tasks` - Store new task with validation
-- `GET /tasks/{id}` - Display specific task with comments
-- `GET /tasks/{id}/edit` - Edit task form
-- `PUT /tasks/{id}` - Update task
-- `DELETE /tasks/{id}` - Delete task
-- `PATCH /tasks/{id}/complete` - Mark task as completed
-
-#### Task Assignment & Management
-- `GET /tasks-assign` - Multi-user task assignment interface
-- `PATCH /tasks/{id}/assign` - Assign task to multiple users
-- `POST /tasks/{id}/postpone` - Postpone task with reason
-- `GET /tasks-postponed` - View postponed tasks
-
-#### Comment System
-- `POST /tasks/{id}/comments` - Add comment to task
-- `DELETE /comments/{id}` - Delete comment (with authorization)
-
-#### User Profile
-- `GET /profile` - User profile management
-- `PATCH /profile` - Update user profile
-- `DELETE /profile` - Delete user account
+Response:
+{
+  "success": true,
+  "message": "Profile updated successfully",
+  "data": {
+    "user": {
+      "id": 1,
+      "name": "John Updated",
+      "username": "john_updated",
+      "email": "john.updated@example.com",
+      "created_at": "2025-10-14T10:30:45.000000Z"
+    }
+  }
+}
 
 
+5.	Get All Tasks
+GET /api/tasks 
+
+Response:
+{
+  "success": true,
+  "message": "Tasks retrieved successfully",
+  "data": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Complete Project Documentation",
+        "description": "Write comprehensive documentation for the project",
+        "status": "Pending",
+        "priority": "High",
+        "due_date": "2025-10-20",
+        "user_id": 1,
+        "assigned_user_id": 2,
+        "created_at": "2025-10-14T10:30:45.000000Z",
+        "updated_at": "2025-10-14T10:30:45.000000Z",
+        "user": {
+          "id": 1,
+          "name": "John Doe",
+          "username": "john_doe"
+        },
+        "assigned_users": [
+          {
+            "id": 2,
+            "name": "Jane Smith",
+            "username": "jane_smith"
+          }
+        ]
+      }
+    ],
+    "pagination": {
+      "current_page": 1,
+      "last_page": 5,
+      "per_page": 10,
+      "total": 45
+    }
+  }
+}
+
+6.	Create task
+POST  /api/tasks
+
+Request:
+{
+  "title": "Complete API Documentation",
+  "description": "Create comprehensive API documentation with examples",
+  "priority": "High",
+  "due_date": "2025-10-25",
+  "assigned_user_id": 3
+}
+
+Response:
+{
+  "success": true,
+  "message": "Task created successfully",
+  "data": {
+    "task": {
+      "id": 5,
+      "title": "Complete API Documentation",
+      "description": "Create comprehensive API documentation with examples",
+      "status": "Pending",
+      "priority": "High",
+      "due_date": "2025-10-25",
+      "user_id": 1,
+      "assigned_user_id": 3,
+      "created_at": "2025-10-14T11:45:30.000000Z",
+      "updated_at": "2025-10-14T11:45:30.000000Z"
+    }
+  }
+}
+
+
+7.	Update Task
+PUT /api/tasks/{task_id} 
+
+Request:
+{
+  "title": "Updated Task Title",
+  "description": "Updated description",
+  "priority": "Medium",
+  "status": "In Progress",
+  "due_date": "2025-10-28",
+  "assigned_user_id": 4
+}
+
+8.	Delete Task
+DELETE /api/tasks/{task_id}
+
+Response:
+{
+  "success": true,
+  "message": "Task deleted successfully"
+}
+
+
+
+9.	Update Task Status
+PATCH  /api/tasks/{task_id}/status
+
+Request:
+{
+  "status": "Completed"
+}
+
+Response :
+{
+  "success": true,
+  "message": "Task marked as completed",
+  "data": {
+    "task": {
+      "id": 1,
+      "status": "Completed",
+      "completed_at": "2025-10-14T15:30:00.000000Z"
+    }
+  }
+}
+
+10.	Update Task Priority
+PATCH  /api/tasks/{task_id}/priority
+
+Request:
+{
+  "priority": "Low"
+}
+
+11.	Assign User to Task
+POST /api/tasks/{task_id}/assign
+
+Request:
+{
+  "username": "demo" 
+  }
+
+Response:
+{
+    "success": true,
+    "message": "User assigned to task successfully",
+    "data": {
+        "task": {
+            "id": 9,
+            "title": "Implement notification system",
+            "description": "Add email + in-app notifications for task status changes. Cover create/update/assign events.",
+            "due_date": "2025-10-20T00:00:00.000000Z",
+            "status": "Pending",
+            "user_id": 3,
+            "created_at": "2025-10-10T10:39:36.000000Z",
+            "updated_at": "2025-10-13T14:30:04.000000Z",
+            "assigned_user_id": null,
+            "priority": "Medium",
+            "assigned_users": [
+                {
+                    "id": 5,
+                    "name": "Admin User",
+                    "email": "admin@example.com",
+                    "email_verified_at": null,
+                    "created_at": "2025-10-10T11:08:05.000000Z",
+                    "updated_at": "2025-10-10T11:08:05.000000Z",
+                    "username": "admin",
+                    "pivot": {
+                        "task_id": 9,
+                        "user_id": 5,
+                        "created_at": "2025-10-10T11:18:32.000000Z",
+                        "updated_at": "2025-10-10T11:18:32.000000Z"
+                    }
+                },
+                {
+                    "id": 6,
+                    "name": "Demo User",
+                    "email": "demo@example.com",
+                    "email_verified_at": null,
+                    "created_at": "2025-10-10T11:08:05.000000Z",
+                    "updated_at": "2025-10-10T11:08:05.000000Z",
+                    "username": "demo",
+                    "pivot": {
+                        "task_id": 9,
+                        "user_id": 6,
+                        "created_at": "2025-10-10T11:56:12.000000Z",
+                        "updated_at": "2025-10-10T11:56:12.000000Z"
+                    }
+                }
+            ],
+            "assigned_user": null
+        }
+    }
+}
+
+
+12.	Add Comment to Task
+POST /api/tasks/{task_id}/comments
+
+Request:
+{
+  "comment": "This is a comment on the task progress"
+}
+ Response:
+{
+  "success": true,
+  "message": "Comment added successfully",
+  "data": {
+    "comment": {
+      "id": 5,
+      "comment": "This is a comment on the task progress",
+      "task_id": 1,
+      "user_id": 1,
+      "created_at": "2025-10-14T16:30:00.000000Z",
+      "updated_at": "2025-10-14T16:30:00.000000Z"
+    }
+  }
+
+13.	Postpone Task
+POST /tasks/{task_id}/postpone
+
+Request:
+{
+  "new_due_date": "2025-10-30",
+  "reason": "Need more time for research"
+}
+
+Response:
+{
+  "success": true,
+  "message": "Task postponed successfully",
+  "data": {
+    "postponement": {
+      "id": 1,
+      "task_id": 1,
+      "original_due_date": "2025-10-20",
+      "new_due_date": "2025-10-30",
+      "reason": "Need more time for research",
+      "user_id": 1,
+      "created_at": "2025-10-14T17:00:00.000000Z"
+    }
+  }
+}
+
+14.	Filtering 
+GET /api/tasks?status=in progress
+
+15.	Pagination
+GET /api/tasks?page=1
+
+16.	Sorting
+GET /api/tasks?sort=priority&order=asc
+
+**##File Attachment Endpoints**
+Get task attachments
+| `GET` | `/tasks/{task}/attachments` |
+Upload file to task
+| `POST` | `/tasks/{task}/attachments` |
+Download attachment
+| `GET` | `/tasks/{task}/attachments/{attachment}/download` |
+Delete attachment
+| `DELETE` | `/tasks/{task}/attachments/{attachment}` |
+
+## File Handling & Attachments System
+
+The Task Management App includes a comprehensive file attachment system that allows users to upload, download, and manage files associated with tasks. This system implements secure file handling with proper authorization and audit trails.
+
+### Security Features
+
+#### File Upload Security
+- **File Type Validation**: Only allowed file extensions accepted
+- **Size Limitations**: Configurable maximum file size limits
+- **Virus Scanning**: Integration ready for antivirus scanning
+- **Secure Storage**: Files stored outside web root
+- **Unique Naming**: UUID-based file naming to prevent conflicts
+
+#### Authorization & Access Control
+- **Upload Permissions**: Only task assignees/owners can upload
+- **Download Permissions**: Access controlled via secure middleware  
+- **Delete Permissions**: Only uploader or task owner can delete
+- **Audit Logging**: All file operations logged for security
+
+### File Handling Best Practices
+
+#### Upload Guidelines
+- **File Size Limits**: Recommend 10MB maximum per file
+- **Batch Uploads**: Support multiple files in single request
+- **Progress Indicators**: Show upload progress to users
+- **Error Handling**: Clear error messages for failed uploads
+- **File Validation**: Client and server-side validation
+
+#### Storage Management  
+- **Regular Cleanup**: Remove orphaned files periodically
+- **Backup Strategy**: Include file attachments in backups
+- **Disk Space Monitoring**: Alert when storage approaches limits
+- **Archive Policy**: Define retention periods for attachments
+
+#### Security Recommendations
+- **Regular Audits**: Review file access logs regularly  
+- **Antivirus Integration**: Scan uploaded files for malware
+- **Access Logging**: Log all file operations for compliance
+- **Secure URLs**: Use temporary signed URLs for downloads
+- **File Encryption**: Consider encrypting sensitive files at rest
+
+### Troubleshooting File Issues
+
+#### Common Problems & Solutions
+
+**1. Upload Failures**
+```bash
+# Check file permissions
+chmod -R 775 storage/app/
+chown -R www-data:www-data storage/
+
+# Verify PHP upload limits
+php -i | grep upload_max_filesize
+php -i | grep post_max_size
+```
+
+**2. Download Issues**
+```bash
+# Check secure download middleware
+php artisan route:list | grep download
+
+# Verify file exists
+php artisan tinker
+>>> Storage::exists('task-attachments/filename.pdf')
+```
+
+**3. Permission Errors**
+```bash
+# Check file ownership
+ls -la storage/app/task-attachments/
+
+# Fix permissions
+sudo chown -R www-data:www-data storage/
+sud  
 ## Development
 
 ### Running Tests
