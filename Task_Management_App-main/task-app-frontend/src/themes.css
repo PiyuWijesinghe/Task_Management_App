@@ -1,0 +1,199 @@
+/* CSS Custom Properties for Theme Support */
+:root {
+  /* Light Theme Colors */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --bg-accent: #e2e8f0;
+  
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --text-tertiary: #6b7280;
+  --text-muted: #9ca3af;
+  
+  --border-primary: #e5e7eb;
+  --border-secondary: #d1d5db;
+  --border-accent: #3b82f6;
+  
+  --shadow-sm: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 20px 40px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 32px 64px rgba(0, 0, 0, 0.12);
+  
+  --gradient-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+  --gradient-card: linear-gradient(145deg, #ffffff, #f8fafc);
+  --gradient-button: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+  
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+  --accent-pink: #ec4899;
+  --accent-green: #10b981;
+  --accent-yellow: #f59e0b;
+  --accent-red: #ef4444;
+  --accent-orange: #f97316;
+  --accent-cyan: #06b6d4;
+}
+
+/* Dark Theme Colors */
+body.dark-theme {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1a1a2e;
+  --bg-tertiary: #16213e;
+  --bg-accent: #334155;
+  
+  --text-primary: #e2e8f0;
+  --text-secondary: #cbd5e0;
+  --text-tertiary: #a0aec0;
+  --text-muted: #6b7280;
+  
+  --border-primary: #2d3748;
+  --border-secondary: #4a5568;
+  --border-accent: #6366f1;
+  
+  --shadow-sm: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 20px 40px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 32px 64px rgba(0, 0, 0, 0.4);
+  
+  --gradient-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  --gradient-card: linear-gradient(145deg, #1a1a2e, #16213e);
+  --gradient-button: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+  
+  --accent-blue: #6366f1;
+  --accent-purple: #8b5cf6;
+  --accent-pink: #ec4899;
+  --accent-green: #10b981;
+  --accent-yellow: #f59e0b;
+  --accent-red: #ef4444;
+  --accent-orange: #f97316;
+  --accent-cyan: #06b6d4;
+}
+
+/* Apply theme variables to body */
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme-aware utility classes */
+.theme-bg-primary { background: var(--bg-primary); }
+.theme-bg-secondary { background: var(--bg-secondary); }
+.theme-bg-tertiary { background: var(--bg-tertiary); }
+.theme-bg-accent { background: var(--bg-accent); }
+
+.theme-text-primary { color: var(--text-primary); }
+.theme-text-secondary { color: var(--text-secondary); }
+.theme-text-tertiary { color: var(--text-tertiary); }
+.theme-text-muted { color: var(--text-muted); }
+
+.theme-border-primary { border-color: var(--border-primary); }
+.theme-border-secondary { border-color: var(--border-secondary); }
+.theme-border-accent { border-color: var(--border-accent); }
+
+.theme-shadow-sm { box-shadow: var(--shadow-sm); }
+.theme-shadow-md { box-shadow: var(--shadow-md); }
+.theme-shadow-lg { box-shadow: var(--shadow-lg); }
+
+.theme-gradient-bg { background: var(--gradient-bg); }
+.theme-gradient-card { background: var(--gradient-card); }
+.theme-gradient-button { background: var(--gradient-button); }
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-accent);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Dashboard specific theme updates */
+.dashboard-container {
+  background: var(--gradient-bg) !important;
+}
+
+.dashboard-header {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-bottom: 1px solid var(--border-primary) !important;
+}
+
+body.dark-theme .dashboard-header {
+  background: rgba(26, 26, 46, 0.9) !important;
+}
+
+.user-info, .feature-card, .task-stats-container, .high-priority-container {
+  background: var(--gradient-card) !important;
+  border: 1px solid var(--border-primary) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+/* Login form theme updates */
+.login-container {
+  background: var(--gradient-bg) !important;
+}
+
+.login-form {
+  background: var(--gradient-card) !important;
+  box-shadow: var(--shadow-md) !important;
+  border: 1px solid var(--border-primary) !important;
+}
+
+/* Form elements */
+.form-group input {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border: 2px solid var(--border-secondary) !important;
+}
+
+.form-group input:focus {
+  border-color: var(--border-accent) !important;
+}
+
+.form-group label {
+  color: var(--text-secondary) !important;
+}
+
+/* Task items */
+.task-item {
+  background: var(--gradient-card) !important;
+  border: 1px solid var(--border-primary) !important;
+}
+
+.task-title {
+  color: var(--text-primary) !important;
+}
+
+.task-description {
+  color: var(--text-tertiary) !important;
+}
+
+/* Stats cards */
+.stat-card {
+  background: var(--gradient-card) !important;
+  border: 1px solid var(--border-secondary) !important;
+}
+
+.stat-content h4 {
+  color: var(--text-tertiary) !important;
+}
+
+.stat-number {
+  color: var(--text-primary) !important;
+}

@@ -1,0 +1,171 @@
+/* Success Notification Styles - Theme Aware */
+.success-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-primary);
+  min-width: 300px;
+  max-width: 400px;
+  z-index: 9999;
+  overflow: hidden;
+  animation: slideInRight 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  gap: 12px;
+}
+
+.notification-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.notification-message {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.notification-close:hover {
+  background: var(--bg-accent);
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+.notification-progress {
+  height: 3px;
+  background: var(--bg-accent);
+  overflow: hidden;
+}
+
+.notification-progress-bar {
+  height: 100%;
+  width: 100%;
+  background: var(--accent-green);
+  transform: translateX(-100%);
+  animation: progressBar linear;
+}
+
+/* Notification Type Variants */
+.notification-success {
+  border-left: 4px solid var(--accent-green);
+}
+
+.notification-success .notification-progress-bar {
+  background: var(--accent-green);
+}
+
+.notification-info {
+  border-left: 4px solid var(--accent-blue);
+}
+
+.notification-info .notification-progress-bar {
+  background: var(--accent-blue);
+}
+
+.notification-warning {
+  border-left: 4px solid var(--accent-yellow);
+}
+
+.notification-warning .notification-progress-bar {
+  background: var(--accent-yellow);
+}
+
+.notification-error {
+  border-left: 4px solid var(--accent-red);
+}
+
+.notification-error .notification-progress-bar {
+  background: var(--accent-red);
+}
+
+/* Animations */
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes progressBar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .success-notification {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .notification-close:hover {
+  background: var(--bg-tertiary);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .success-notification {
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+    max-width: none;
+  }
+  
+  .notification-content {
+    padding: 14px 16px;
+  }
+  
+  .notification-message {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .success-notification {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+  }
+  
+  .notification-content {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  
+  .notification-icon {
+    font-size: 18px;
+  }
+  
+  .notification-message {
+    font-size: 12px;
+  }
+}

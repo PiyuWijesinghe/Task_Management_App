@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Report Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .step {
+            background: #f4f4f4;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+        .code {
+            background: #222;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .screenshot-placeholder {
+            background: #e9ecef;
+            border: 2px dashed #adb5bd;
+            padding: 40px;
+            text-align: center;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🇱🇰 Task Report Generate කරන්නේ කොහොමද?</h1>
+    
+    <div class="warning">
+        <strong>⚠️ Important:</strong> මේ instructions follow කරන්න ඔනේ server running වෙන විට
+    </div>
+
+    <div class="step">
+        <h3>Step 1: Laravel Server Start කරන්න</h3>
+        <p><strong>Terminal එකේ මේ command එක run කරන්න:</strong></p>
+        <div class="code">
+            cd "C:\Users\CYBORG 15\Downloads\Task_Management_App-main (1)\Task_Management_App-main\task-app"<br>
+            php artisan serve
+        </div>
+        <p>Or double-click the <code>start_server.bat</code> file in the main folder</p>
+        <div class="success">
+            ✅ Server start වුනාම දකින්න: "Laravel development server started: http://127.0.0.1:8000"
+        </div>
+    </div>
+
+    <div class="step">
+        <h3>Step 2: Browser එකේ Application එක Open කරන්න</h3>
+        <p><strong>Browser එකේ මේ URL එක type කරන්න:</strong></p>
+        <div class="code">http://127.0.0.1:8000</div>
+        <div class="screenshot-placeholder">
+            🌐 Browser එකේ Task Management App එක load වේවි
+        </div>
+    </div>
+
+    <div class="step">
+        <h3>Step 3: Login කරන්න</h3>
+        <p>ඔබේ account details වලින් login කරන්න:</p>
+        <ul>
+            <li>Email: your_email@example.com</li>
+            <li>Password: your_password</li>
+        </ul>
+        <div class="screenshot-placeholder">
+            🔐 Login page එක පෙන්වේවි
+        </div>
+    </div>
+
+    <div class="step">
+        <h3>Step 4: Reports Section එකට යන්න</h3>
+        <p><strong>Navigation bar එකේ "Reports" link එක click කරන්න</strong></p>
+        <div class="screenshot-placeholder">
+            📊 Reports menu item එක navigation bar එකේ Dashboard ළගම තියේ
+        </div>
+    </div>
+
+    <div class="step">
+        <h3>Step 5: Report Filters Set කරන්න</h3>
+        <p><strong>ඔනේ filters තෝරන්න:</strong></p>
+        <ul>
+            <li><strong>Status:</strong> All Statuses / To Do / In Progress / Completed</li>
+            <li><strong>Priority:</strong> All Priorities / High / Medium / Low</li>
+            <li><strong>Assignee:</strong> All Assignees / Specific User</li>
+            <li><strong>Date From:</strong> Start date (optional)</li>
+            <li><strong>Date To:</strong> End date (optional)</li>
+            <li><strong>Output Format:</strong> PDF Download / HTML Preview</li>
+        </ul>
+        <div class="screenshot-placeholder">
+            🎛️ Filter form එක parameters වලින්
+        </div>
+    </div>
+
+    <div class="step">
+        <h3>Step 6: Report Generate කරන්න</h3>
+        <p><strong>"Generate Report" button එක click කරන්න</strong></p>
+        
+        <h4>🔍 HTML Preview:</h4>
+        <ul>
+            <li>Browser එකේම report එක පෙන්වේවි</li>
+            <li>Data correct දැයි check කරන්න පුළුවන්</li>
+        </ul>
+
+        <h4>📄 PDF Download:</h4>
+        <ul>
+            <li>PDF file එකක් download වේවි</li>
+            <li>File name: task-report-2024-10-17-14-30-25.pdf</li>
+        </ul>
+
+        <div class="screenshot-placeholder">
+            📋 Generated report එක beautiful PDF format එකේ
+        </div>
+    </div>
+
+    <div class="step">
+        <h3>Step 7: Report Analysis කරන්න</h3>
+        <p><strong>Report එකේ මේ sections තියේ:</strong></p>
+        <ul>
+            <li><strong>Header:</strong> Report title & generation info</li>
+            <li><strong>Applied Filters:</strong> ඔබ select කරපු filters</li>
+            <li><strong>Summary Statistics:</strong> 
+                <ul>
+                    <li>Total tasks count</li>
+                    <li>Completed vs Pending</li>
+                    <li>Overdue tasks</li>
+                    <li>Due today tasks</li>
+                    <li>Priority breakdown</li>
+                </ul>
+            </li>
+            <li><strong>Task Details Table:</strong>
+                <ul>
+                    <li>Task title & description</li>
+                    <li>Priority (color coded)</li>
+                    <li>Status badges</li>
+                    <li>Due dates</li>
+                    <li>Assigned users</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="success">
+        <h3>🎉 Congratulations!</h3>
+        <p>ඔබේ Task Report එක successfully generate වුනා! මේ report එක වලින්:</p>
+        <ul>
+            <li>✅ Project progress track කරන්න පුළුවන්</li>
+            <li>✅ Team performance analyze කරන්න පුළුවන්</li>
+            <li>✅ Overdue tasks identify කරන්න පුළුවන්</li>
+            <li>✅ Management presentations වලට use කරන්න පුළුවන්</li>
+        </ul>
+    </div>
+
+    <div class="warning">
+        <h3>🔧 Troubleshooting:</h3>
+        <p><strong>Problem:</strong> "Could not open input file: artisan"</p>
+        <p><strong>Solution:</strong> Make sure you're in the correct directory:</p>
+        <div class="code">
+            cd "C:\Users\CYBORG 15\Downloads\Task_Management_App-main (1)\Task_Management_App-main\task-app"
+        </div>
+        
+        <p><strong>Problem:</strong> Navigation එකේ "Reports" link එක නැහැ</p>
+        <p><strong>Solution:</strong> Browser එක refresh කරන්න or cache clear කරන්න</p>
+    </div>
+
+    <div class="step">
+        <h3>🎨 Report Features:</h3>
+        <ul>
+            <li><strong>Color Coding:</strong>
+                <ul>
+                    <li>🔴 High Priority - Red</li>
+                    <li>🟡 Medium Priority - Yellow</li>
+                    <li>🟢 Low Priority - Green</li>
+                </ul>
+            </li>
+            <li><strong>Status Badges:</strong>
+                <ul>
+                    <li>✅ Completed - Green</li>
+                    <li>🔄 In Progress - Blue</li>
+                    <li>⏳ To Do - Gray</li>
+                </ul>
+            </li>
+            <li><strong>Special Highlighting:</strong>
+                <ul>
+                    <li>🚨 Overdue tasks - Red background</li>
+                    <li>⚠️ Due today - Yellow background</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>
