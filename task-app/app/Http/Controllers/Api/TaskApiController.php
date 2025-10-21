@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Task;
+use App\Models\TaskAttachment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TaskApiController extends Controller
@@ -158,8 +161,11 @@ class TaskApiController extends Controller
                 'status' => 'sometimes|in:Pending,In Progress,Completed',
                 'priority' => 'sometimes|in:High,Medium,Low',
                 'assigned_user_id' => 'nullable|exists:users,id',
+                'assigned_to' => 'nullable|exists:users,id',
                 'assigned_users' => 'nullable|array',
                 'assigned_users.*' => 'exists:users,id',
+                'attachments' => 'nullable|array|max:5',
+                'attachments.*' => 'file|max:10240|mimes:pdf,jpg,jpeg,png,gif,doc,docx,xls,xlsx,txt,ppt,pptx',
             ]);
 
             if ($validator->fails()) {
@@ -170,6 +176,8 @@ class TaskApiController extends Controller
                 ], 422);
             }
 
+            $assignedUserId = $request->assigned_user_id ?? $request->assigned_to;
+            
             $task = Task::create([
                 'title' => $request->title,
                 'description' => $request->description,
@@ -177,13 +185,20 @@ class TaskApiController extends Controller
                 'status' => $request->get('status', 'Pending'),
                 'priority' => $request->get('priority', 'Medium'),
                 'user_id' => $request->user()->id,
-                'assigned_user_id' => $request->assigned_user_id,
+                'assigned_user_id' => $assignedUserId,
             ]);
+
+            // Handle file attachments
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $this->storeAttachment($task, $file);
+                }
+            }
 
             if ($request->has('assigned_users')) {
                 $task->assignedUsers()->sync($request->assigned_users);
             }
-            $task->load(['assignedUsers', 'assignedUser', 'user']);
+            $task->load(['assignedUsers', 'assignedUser', 'user', 'attachments']);
             return response()->json([
                 'success' => true,
                 'message' => 'Task created successfully',
@@ -577,5 +592,224 @@ class TaskApiController extends Controller
         return $task->user_id === $user->id ||
                $task->assigned_user_id === $user->id ||
                $task->assignedUsers()->where('user_id', $user->id)->exists();
+    }
+
+    /**
+     * Store a task attachment
+     */
+    private function storeAttachment(Task $task, $file)
+    {
+        // Generate unique filename
+        $originalName = $file->getClientOriginalName();
+        $extension = $file->getClientOriginalExtension();
+        $storedName = Str::uuid() . '.' . $extension;
+        
+        // Store file in task attachments directory
+        $filePath = $file->storeAs('task-attachments', $storedName, 'local');
+        
+        // Create attachment record
+        return $task->attachments()->create([
+            'original_name' => $originalName,
+            'stored_name' => $storedName,
+            'file_path' => $filePath,
+            'mime_type' => $file->getMimeType(),
+            'size' => $file->getSize(),
+            'extension' => $extension,
+            'uploaded_by' => auth()->user()->id, // Use user()->id instead of id() to get primary key
+        ]);
+    }
+
+    /**
+     * Get task attachments
+     */
+    public function getAttachments(Request $request, Task $task): JsonResponse
+    {
+        try {
+            // Use policy to authorize viewing attachments
+            $this->authorize('viewAny', [TaskAttachment::class, $task]);
+            
+            $attachments = $task->attachments()->with('uploadedBy:id,name,email')->orderBy('created_at', 'desc')->get();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $attachments
+            ], 200);
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to view attachments for this task'
+            ], 403);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch attachments',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Add a new attachment to task
+     */
+    public function storeAttachmentApi(Request $request, Task $task): JsonResponse
+    {
+        try {
+            $user = $request->user();
+            \Log::info('Upload attempt', [
+                'task_id' => $task->id,
+                'user_id' => $user ? $user->id : 'null',
+                'task_user_id' => $task->user_id,
+                'assigned_user_id' => $task->assigned_user_id
+            ]);
+            
+            // Use policy to authorize attachment creation
+            $this->authorize('create', [TaskAttachment::class, $task]);
+            
+            $validator = Validator::make($request->all(), [
+                'attachment' => 'required|file|max:10240|mimes:pdf,jpg,jpeg,png,gif,doc,docx,xls,xlsx,txt,ppt,pptx',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $file = $request->file('attachment');
+            $attachment = $this->storeAttachment($task, $file);
+            
+            \Log::info('Attachment uploaded successfully', [
+                'user_id' => $user->id,
+                'task_id' => $task->id,
+                'attachment_id' => $attachment->id,
+                'file_name' => $attachment->original_name
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'File uploaded successfully!',
+                'data' => $attachment
+            ], 201);
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            \Log::warning('Upload unauthorized', [
+                'user_id' => $user->id,
+                'task_id' => $task->id
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to upload attachments to this task'
+            ], 403);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to upload attachment',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Download task attachment
+     */
+    public function downloadAttachment(Request $request, Task $task, TaskAttachment $attachment)
+    {
+        try {
+            // First, verify the attachment belongs to the task
+            if ($attachment->task_id !== $task->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Attachment not found for this task'
+                ], 404);
+            }
+
+            // Use policy to authorize download
+            $this->authorize('download', $attachment);
+
+            // Check if file exists on storage
+            if (!Storage::exists($attachment->file_path)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File not found on server'
+                ], 404);
+            }
+
+            // Log the download for security audit (optional)
+            \Log::info('Attachment downloaded', [
+                'user_id' => $request->user()->id,
+                'task_id' => $task->id,
+                'attachment_id' => $attachment->id,
+                'file_name' => $attachment->original_name,
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent()
+            ]);
+
+            return Storage::download($attachment->file_path, $attachment->original_name);
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to download this attachment'
+            ], 403);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to download attachment',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete task attachment
+     */
+    public function deleteAttachment(Request $request, Task $task, TaskAttachment $attachment): JsonResponse
+    {
+        try {
+            // First, verify the attachment belongs to the task
+            if ($attachment->task_id !== $task->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Attachment not found for this task'
+                ], 404);
+            }
+
+            // Use policy to authorize deletion
+            $this->authorize('delete', $attachment);
+
+            // Delete physical file
+            if (Storage::exists($attachment->file_path)) {
+                Storage::delete($attachment->file_path);
+            }
+
+            // Log the deletion for security audit
+            \Log::info('Attachment deleted', [
+                'user_id' => $request->user()->id,
+                'task_id' => $task->id,
+                'attachment_id' => $attachment->id,
+                'file_name' => $attachment->original_name,
+                'uploaded_by' => $attachment->uploaded_by
+            ]);
+
+            // Delete database record
+            $attachment->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Attachment deleted successfully!'
+            ], 200);
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to delete this attachment'
+            ], 403);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete attachment',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -12,12 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->api(prepend: [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-        ]);
-
+        // Remove the EnsureFrontendRequestsAreStateful middleware for purely API-based authentication
+        // $middleware->api(prepend: [
+        //     \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        // ]);
+        
+        // Register custom middleware aliases
         $middleware->alias([
-            'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+            'secure.download' => \App\Http\Middleware\SecureDownloadMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

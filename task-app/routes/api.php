@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\TaskApiController;
 use App\Http\Controllers\Api\UserApiController;
 use App\Http\Controllers\Api\CommentApiController;
 use App\Http\Controllers\Api\PostponementApiController;
+use App\Http\Controllers\Api\DebugController;
 
 Route::prefix('v1')->group(function () {
     
@@ -14,7 +15,6 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/register', [AuthApiController::class, 'register']);
         Route::post('/login', [AuthApiController::class, 'login']);
-        Route::options('/login', [AuthApiController::class, 'login']); // Handle preflight
         Route::post('/forgot-password', [AuthApiController::class, 'forgotPassword']);
         Route::post('/reset-password', [AuthApiController::class, 'resetPassword']);
     });
@@ -68,6 +68,12 @@ Route::prefix('v1')->group(function () {
             // Task postponement routes
             Route::post('/{task}/postpone', [PostponementApiController::class, 'postpone']); // Postpone task
             Route::get('/{task}/postponements', [PostponementApiController::class, 'history']); // Postponement history
+            
+            // Task attachment routes
+            Route::get('/{task}/attachments', [TaskApiController::class, 'getAttachments']); // Get task attachments
+            Route::post('/{task}/attachments', [TaskApiController::class, 'storeAttachmentApi']); // Add attachment
+            Route::get('/{task}/attachments/{attachment}/download', [TaskApiController::class, 'downloadAttachment'])->middleware('secure.download'); // Download attachment
+            Route::delete('/{task}/attachments/{attachment}', [TaskApiController::class, 'deleteAttachment']); // Delete attachment
         });
 
         // Task comments routes
@@ -87,6 +93,12 @@ Route::prefix('v1')->group(function () {
         Route::prefix('postponements')->group(function () {
             Route::get('/', [PostponementApiController::class, 'index']); // Get user's postponements
             Route::get('/{postponement}', [PostponementApiController::class, 'show']); // Get specific postponement
+        });
+
+        // Debug routes
+        Route::prefix('debug')->group(function () {
+            Route::get('/auth', [DebugController::class, 'debugAuth']); // Debug auth state
+            Route::post('/tasks/{task}/upload', [DebugController::class, 'debugUpload']); // Debug upload
         });
 
         // Bulk operations routes

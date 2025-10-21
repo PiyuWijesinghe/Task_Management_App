@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Auth</title>
+</head>
+<body>
+    <h1>Auth Debug Tool</h1>
+    <button onclick="debugAuth()">Test Auth</button>
+    <button onclick="debugUpload()">Test Upload Debug</button>
+    <div id="output"></div>
+
+    <script>
+        function log(message) {
+            const output = document.getElementById('output');
+            output.innerHTML += '<div>' + JSON.stringify(message, null, 2) + '</div>';
+            console.log(message);
+        }
+
+        async function debugAuth() {
+            const token = localStorage.getItem('authToken');
+            log('Token: ' + token);
+            
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/v1/debug/auth', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                log('Auth Debug Response:');
+                log(data);
+            } catch (error) {
+                log('Error: ' + error.message);
+            }
+        }
+
+        async function debugUpload() {
+            const token = localStorage.getItem('authToken');
+            
+            // Create a dummy file
+            const formData = new FormData();
+            const file = new Blob(['test content'], { type: 'text/plain' });
+            formData.append('attachment', file, 'test.txt');
+            
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/v1/debug/tasks/23/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                log('Upload Debug Response:');
+                log(data);
+            } catch (error) {
+                log('Upload Error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -74,14 +74,6 @@ class AuthApiController extends Controller
      */
     public function login(Request $request): JsonResponse
     {
-        // Handle preflight CORS request
-        if ($request->isMethod('OPTIONS')) {
-            return response()->json(['status' => 'OK'], 200)
-                ->header('Access-Control-Allow-Origin', '*')
-                ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-        }
-
         try {
             // Accept either username OR email + password.
             // Client can send {"username": "...", "password": "..."} OR {"email": "...", "password": "..."}
@@ -99,10 +91,7 @@ class AuthApiController extends Controller
                     'success' => false,
                     'message' => 'Validation failed',
                     'errors' => $validator->errors()
-                ], 422)
-                    ->header('Access-Control-Allow-Origin', '*')
-                    ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-                    ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+                ], 422);
             }
 
             // Determine which field was provided
@@ -125,10 +114,7 @@ class AuthApiController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid login credentials'
-                ], 401)
-                    ->header('Access-Control-Allow-Origin', '*')
-                    ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-                    ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+                ], 401);
             }
 
             $user = Auth::user();
@@ -148,20 +134,14 @@ class AuthApiController extends Controller
                     'token' => $token,
                     'token_type' => 'Bearer'
                 ]
-            ], 200)
-                ->header('Access-Control-Allow-Origin', '*')
-                ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+            ], 200);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Login failed',
                 'error' => $e->getMessage()
-            ], 500)
-                ->header('Access-Control-Allow-Origin', '*')
-                ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+            ], 500);
         }
     }
 

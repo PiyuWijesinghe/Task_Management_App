@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -32,6 +33,17 @@ Route::middleware('auth')->group(function () {
     // Comment routes
     Route::post('/tasks/{task}/comments', [TaskController::class, 'storeComment'])->name('tasks.comments.store');
     Route::delete('/comments/{comment}', [TaskController::class, 'deleteComment'])->name('comments.delete');
+    
+    // Attachment routes
+    Route::post('/tasks/{task}/attachments', [TaskController::class, 'storeAttachmentWeb'])->name('tasks.attachments.store');
+    Route::get('/tasks/{task}/attachments/{attachment}/download', [TaskController::class, 'downloadAttachment'])->middleware('secure.download')->name('tasks.attachments.download');
+    Route::delete('/tasks/{task}/attachments/{attachment}', [TaskController::class, 'deleteAttachment'])->name('tasks.attachments.destroy');
+    
+    // Report routes
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::post('/reports/generate', [ReportController::class, 'generateTaskReport'])->name('reports.generate');
+    Route::get('/reports/export', [ReportController::class, 'exportTaskReport'])->name('reports.export');
+    Route::get('/reports/filter-options', [ReportController::class, 'getFilterOptions'])->name('reports.filter-options');
 });
 
 require __DIR__.'/auth.php';

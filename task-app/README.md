@@ -1,16 +1,75 @@
-# Task Management Application
+# Task Management Application - Backend API
 
-A comprehensive collaborative task management system built with Laravel 12 and MySQL, featuring advanced user authentication, multi-user task assignment, priority management, real-time commenting, and a beautiful responsive interface.
+A comprehensive collaborative task management system built with Laravel 12 and MySQL, featuring advanced user authentication, multi-user task assignment, priority management, real-time commenting, and a RESTful API backend.
 
-## Key Features
+## 🚀 Quick Start
 
-### Authentication & User Management
+### Prerequisites
+- PHP 8.2 or higher
+- Composer
+- MySQL 8.0 or higher
+- Git
+
+### Installation & Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd task-app
+   ```
+
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
+
+3. **Environment setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+4. **Database configuration**
+   Update your `.env` file with database credentials:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=task_management_app
+   DB_USERNAME=root
+   DB_PASSWORD=your_password
+   
+   SESSION_DRIVER=database
+   SESSION_LIFETIME=120
+   ```
+
+5. **Create database and run migrations**
+   ```bash
+   # Create database in MySQL
+   mysql -u root -p -e "CREATE DATABASE task_management_app;"
+   
+   # Run migrations and seeders
+   php artisan migrate
+   php artisan db:seed  # Optional: seed with sample data
+   ```
+
+6. **Start the development server**
+   ```bash
+   php artisan serve
+   ```
+   
+   The API will be available at: `http://localhost:8000`
+
+## 📋 Key Features
+
+### 🔐 Authentication & User Management
 - **Username-based Authentication**: Secure login with username or email
-- **User Profile Management**: Complete profile editing with avatar initials
+- **Laravel Sanctum**: Token-based API authentication
+- **User Profile Management**: Complete profile editing capabilities
 - **Session Management**: Database-driven secure session handling
 - **Authorization Policies**: Role-based task access control
 
-### Advanced Task Management
+### 📝 Advanced Task Management
 - **Complete CRUD Operations**: Create, read, update, and delete tasks
 - **Multi-User Assignment**: Assign tasks to multiple users simultaneously
 - **Priority System**: Set and filter tasks by priority (High, Medium, Low)
@@ -18,35 +77,445 @@ A comprehensive collaborative task management system built with Laravel 12 and M
 - **Due Date Management**: Set deadlines with overdue alerts
 - **Task Postponement**: Reschedule tasks with reason tracking
 
-### Collaborative Features
+### 💬 Collaborative Features
 - **Real-time Comments**: Add comments to tasks with chronological ordering
 - **Comment Management**: Delete own comments with proper authorization
 - **Activity Tracking**: Timestamps for all actions and updates
 
-### Beautiful User Interface
-- **Gradient Design**: Modern UI with beautiful gradient backgrounds
-- **Responsive Layout**: Perfect on desktop, tablet, and mobile devices
-- **Interactive Elements**: Hover effects
-- **Dark Mode Support**: Toggle between light and dark themes
-- **Priority Badges**: Visual priority indicators with color coding
-- **Status Indicators**: Clear visual status representation
-
-### Advanced Filtering & Search
+### 🔍 Advanced Filtering & Search
 - **Priority Filtering**: Filter tasks by High, Medium, Low priority
 - **Status Filtering**: View tasks by completion status
 - **User Assignment Search**: Find tasks by assigned users
-- **Searchable Dropdowns**: Easy user selection with search functionality
 - **Sort Options**: Sort by priority, due date, or creation date
+- **Full-text Search**: Search across task titles and descriptions
 
-## Technology Stack
+## 🛠️ Technology Stack
 
 - **Backend Framework**: Laravel 12.x
 - **Database Engine**: MySQL 8.0+
-- **Frontend**: Blade Templates with Tailwind CSS
-- **Authentication**: Laravel Breeze
+- **Authentication**: Laravel Sanctum (API tokens)
 - **PHP Version**: 8.2+
 - **Package Manager**: Composer
-- **Asset Bundling**: Vite
+- **Testing**: PHPUnit
+- **API Documentation**: Built-in OpenAPI support
+
+## 🌐 API Endpoints
+
+### Base URL
+```
+http://localhost:8000/api/v1
+```
+
+### Authentication Required
+Most endpoints require a Bearer token in the Authorization header:
+```
+Authorization: Bearer {your-token}
+```
+
+### 🔐 Authentication Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/auth/register` | Register new user | ❌ |
+| `POST` | `/auth/login` | User login | ❌ |
+| `GET` | `/auth/user` | Get authenticated user | ✅ |
+| `POST` | `/auth/logout` | Logout user | ✅ |
+| `POST` | `/auth/logout-all` | Logout from all devices | ✅ |
+| `PATCH` | `/auth/update-profile` | Update user profile | ✅ |
+| `POST` | `/auth/change-password` | Change password | ✅ |
+
+### 📝 Task Management Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/tasks` | List all tasks with filters | ✅ |
+| `POST` | `/tasks` | Create new task | ✅ |
+| `GET` | `/tasks/{id}` | Get specific task | ✅ |
+| `PUT` | `/tasks/{id}` | Update task | ✅ |
+| `DELETE` | `/tasks/{id}` | Delete task | ✅ |
+| `PATCH` | `/tasks/{id}/status` | Update task status | ✅ |
+| `PATCH` | `/tasks/{id}/complete` | Mark task as completed | ✅ |
+| `PATCH` | `/tasks/{id}/priority` | Update task priority | ✅ |
+
+### 👥 Task Assignment Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/tasks/{id}/assignees` | Get task assignees | ✅ |
+| `POST` | `/tasks/{id}/assign` | Assign user to task | ✅ |
+| `DELETE` | `/tasks/{id}/unassign/{userId}` | Unassign user from task | ✅ |
+
+### 💬 Task Comments Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/tasks/{id}/comments` | Get task comments | ✅ |
+| `POST` | `/tasks/{id}/comments` | Add comment to task | ✅ |
+| `PUT` | `/tasks/{id}/comments/{commentId}` | Update comment | ✅ |
+| `DELETE` | `/tasks/{id}/comments/{commentId}` | Delete comment | ✅ |
+| `GET` | `/comments/{id}` | Get specific comment | ✅ |
+
+### 📅 Task Operations Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/tasks/{id}/postpone` | Postpone task | ✅ |
+| `GET` | `/tasks/{id}/postponements` | Get postponement history | ✅ |
+| `GET` | `/tasks/overdue` | Get overdue tasks | ✅ |
+| `GET` | `/tasks/due-today` | Get tasks due today | ✅ |
+| `GET` | `/postponements` | Get user's postponements | ✅ |
+
+### 👤 User Management Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/users` | Get all users | ✅ |
+| `GET` | `/users/{id}` | Get specific user | ✅ |
+| `GET` | `/users/search` | Search users | ✅ |
+| `GET` | `/reports/user/activity` | Get user activity report | ✅ |
+
+### 📊 Dashboard & Analytics Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/tasks/dashboard` | Get dashboard statistics | ✅ |
+| `GET` | `/search/tasks` | Advanced task search | ✅ |
+
+### 🔄 Bulk Operations Endpoints
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/bulk/tasks/complete` | Bulk complete tasks | ✅ |
+| `POST` | `/bulk/tasks/delete` | Bulk delete tasks | ✅ |
+| `POST` | `/bulk/tasks/assign` | Bulk assign tasks | ✅ |
+| `POST` | `/bulk/tasks/update-priority` | Bulk update priority | ✅ |
+
+### 📝 Example API Usage
+
+#### Authentication Flow
+```bash
+# 1. Register a new user
+curl -X POST http://localhost:8000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "name": "John Doe",
+    "username": "johndoe",
+    "email": "john@example.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+  }'
+
+# 2. Login to get token
+curl -X POST http://localhost:8000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "login": "johndoe",
+    "password": "password123"
+  }'
+```
+
+#### Task Management
+```bash
+# 3. Create a task
+curl -X POST http://localhost:8000/api/v1/tasks \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "title": "Complete API Documentation",
+    "description": "Write comprehensive API documentation",
+    "due_date": "2025-10-15",
+    "priority": "High"
+  }'
+
+# 4. Get all tasks with filters
+curl -X GET "http://localhost:8000/api/v1/tasks?status=Pending&priority=High&sort_by=due_date&sort_order=asc" \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  -H "Accept: application/json"
+
+# 5. Add comment to task
+curl -X POST http://localhost:8000/api/v1/tasks/1/comments \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "comment": "Started working on this task"
+  }'
+```
+
+#### Query Parameters for GET /tasks
+- `status`: Filter by status (`Pending`, `In Progress`, `Completed`)
+- `priority`: Filter by priority (`High`, `Medium`, `Low`)
+- `sort_by`: Sort by (`due_date`, `priority`, `created_at`, `title`)
+- `sort_order`: Sort order (`asc`, `desc`)
+- `limit`: Items per page (1-100, default: 15)
+- `page`: Page number (default: 1)
+- `search`: Search term for title/description
+
+### 📄 Response Format
+All API responses follow this structure:
+
+#### Success Response
+```json
+{
+    "success": true,
+    "message": "Operation successful",
+    "data": {
+        // Response data here
+    }
+}
+```
+
+#### Error Response
+```json
+{
+    "success": false,
+    "message": "Error description",
+    "errors": {
+        // Validation errors (if applicable)
+    }
+}
+```
+
+## 🧪 Development & Testing
+
+### Running Tests
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test suite
+php artisan test --testsuite=Feature
+php artisan test --testsuite=Unit
+
+# Run tests with coverage
+php artisan test --coverage
+```
+
+### Code Quality & Formatting
+```bash
+# Format code with Laravel Pint
+./vendor/bin/pint
+
+# Check code style without fixing
+./vendor/bin/pint --test
+
+# Run static analysis (if PHPStan is installed)
+./vendor/bin/phpstan analyse
+```
+
+### Database Management
+```bash
+# Fresh migration with seeding
+php artisan migrate:fresh --seed
+
+# Rollback migrations
+php artisan migrate:rollback
+
+# Reset database
+php artisan migrate:reset
+
+# Create new migration
+php artisan make:migration create_example_table
+
+# Create new seeder
+php artisan make:seeder ExampleSeeder
+```
+
+### Cache Management
+```bash
+# Clear all caches
+php artisan optimize:clear
+
+# Individual cache clearing
+php artisan cache:clear        # Application cache
+php artisan config:clear       # Configuration cache
+php artisan route:clear        # Route cache
+php artisan view:clear         # View cache
+php artisan event:clear        # Event cache
+
+# Optimize for production
+php artisan optimize
+```
+
+### API Testing with Postman
+A Postman collection is available at `postman_task_api_collection.json`. Import it to test all API endpoints.
+
+### Environment Variables
+Create a `.env` file with the following essential variables:
+
+```env
+# Application
+APP_NAME="Task Management API"
+APP_ENV=local
+APP_KEY=base64:generated-key-here
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+# Database
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=task_management_app
+DB_USERNAME=root
+DB_PASSWORD=
+
+# Session & Authentication
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+SANCTUM_STATEFUL_DOMAINS=localhost:3000
+
+# Cache & Queue
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+
+# Mail (optional)
+MAIL_MAILER=smtp
+MAIL_HOST=127.0.0.1
+MAIL_PORT=2525
+```
+
+## 🚀 Production Deployment
+
+### Prerequisites for Production
+- PHP 8.2+ with required extensions (mbstring, pdo_mysql, etc.)
+- MySQL 8.0+ or MariaDB 10.4+
+- Composer
+- Web server (Apache/Nginx)
+- SSL certificate (recommended)
+
+### Production Setup
+```bash
+# 1. Clone and setup
+git clone <repository-url> /var/www/task-api
+cd /var/www/task-api
+
+# 2. Install dependencies
+composer install --optimize-autoloader --no-dev
+
+# 3. Configure environment
+cp .env.example .env
+php artisan key:generate
+
+# 4. Set permissions
+sudo chown -R www-data:www-data /var/www/task-api
+sudo chmod -R 755 /var/www/task-api
+sudo chmod -R 775 /var/www/task-api/storage
+sudo chmod -R 775 /var/www/task-api/bootstrap/cache
+
+# 5. Optimize for production
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+php artisan optimize
+
+# 6. Run migrations
+php artisan migrate --force
+```
+
+### Nginx Configuration Example
+```nginx
+server {
+    listen 80;
+    server_name your-api-domain.com;
+    root /var/www/task-api/public;
+    
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+    
+    index index.php;
+    
+    charset utf-8;
+    
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+    
+    error_page 404 /index.php;
+    
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+    
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+#### Database Connection Error
+```bash
+# Check MySQL service
+sudo systemctl status mysql
+
+# Test database connection
+php artisan tinker
+>>> DB::connection()->getPdo();
+```
+
+#### Permission Issues
+```bash
+# Fix storage permissions
+sudo chmod -R 775 storage bootstrap/cache
+sudo chown -R www-data:www-data storage bootstrap/cache
+```
+
+#### Token Authentication Issues
+```bash
+# Clear auth cache
+php artisan cache:clear
+php artisan config:clear
+
+# Check Sanctum configuration
+php artisan route:list | grep sanctum
+```
+
+#### 500 Internal Server Error
+```bash
+# Check logs
+tail -f storage/logs/laravel.log
+
+# Enable debug mode in .env
+APP_DEBUG=true
+```
+
+## 📊 Performance Optimization
+
+### Database Indexing
+Key indexes are automatically created through migrations:
+- `tasks.user_id` - For task owner queries
+- `tasks.assigned_user_id` - For assignment queries
+- `tasks.status` - For status filtering
+- `tasks.priority` - For priority filtering
+- `tasks.due_date` - For date-based queries
+
+### Query Optimization
+- Eager loading relationships to prevent N+1 queries
+- Database query caching for dashboard statistics
+- Pagination for large datasets
+
+### API Rate Limiting
+- 60 requests per minute for unauthenticated users
+- 100 requests per minute for authenticated users
+- Customizable via `config/sanctum.php`
+
+## 📚 Additional Resources
+
+- [Laravel 12 Documentation](https://laravel.com/docs/12.x)
+- [Laravel Sanctum Documentation](https://laravel.com/docs/12.x/sanctum)
+- [MySQL 8.0 Documentation](https://dev.mysql.com/doc/refman/8.0/en/)
+- [PHPUnit Documentation](https://phpunit.de/documentation.html)
 
 ## Installation Instructions
 

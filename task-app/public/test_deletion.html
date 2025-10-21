@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Deletion Test - UI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        .warning { background-color: #fff3cd; border-color: #ffeeba; }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #6c757d; cursor: not-allowed; }
+        
+        .delete-btn {
+            background-color: #dc3545;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+        
+        input[type="file"] {
+            margin: 10px 0;
+            padding: 5px;
+        }
+        
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        
+        .attachment-info {
+            flex-grow: 1;
+        }
+        
+        .log {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📁 File Deletion Test - UI Interface</h1>
+    
+    <div class="test-section info">
+        <h3>Test Overview</h3>
+        <p>This test will verify that file deletion works correctly through the UI:</p>
+        <ol>
+            <li>Login with test credentials</li>
+            <li>Create a test task</li>
+            <li>Upload a test file</li>
+            <li>Verify file appears in attachments list</li>
+            <li>Delete file using UI button</li>
+            <li>Verify file is removed from UI and backend</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h3>🔐 Step 1: Authentication</h3>
+        <div>
+            <input type="email" id="email" placeholder="Email" value="john@example.com">
+            <input type="password" id="password" placeholder="Password" value="password123">
+            <button onclick="login()">Login</button>
+        </div>
+        <div id="auth-status">Not logged in</div>
+    </div>
+
+    <div class="test-section">
+        <h3>📋 Step 2: Task Management</h3>
+        <div>
+            <input type="text" id="taskTitle" placeholder="Task Title" value="File Deletion Test Task">
+            <button onclick="createTask()" id="createTaskBtn" disabled>Create Test Task</button>
+        </div>
+        <div id="task-status">No task created</div>
+    </div>
+
+    <div class="test-section">
+        <h3>📎 Step 3: File Management</h3>
+        <div>
+            <input type="file" id="fileInput" multiple disabled>
+            <button onclick="uploadFiles()" id="uploadBtn" disabled>Upload Files</button>
+        </div>
+        <div id="upload-status">No files uploaded</div>
+        
+        <h4>Current Attachments:</h4>
+        <div id="attachments-list">No attachments</div>
+    </div>
+
+    <div class="test-section">
+        <h3>🗑️ Step 4: Database & File System Verification</h3>
+        <button onclick="verifyDeletion()" id="verifyBtn" disabled>Verify Deletion Results</button>
+        <div id="verification-results">No verification performed yet</div>
+    </div>
+
+    <div class="test-section">
+        <h3>📝 Test Log</h3>
+        <div id="test-log" class="log">Test log will appear here...\n</div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000/api/v1';
+        let authToken = null;
+        let currentTaskId = null;
+        let attachments = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('test-log');
+            const typePrefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            logElement.textContent += `[${timestamp}] ${typePrefix} ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        async function makeRequest(url, options = {}) {
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                ...(authToken && { 'Authorization': `Bearer ${authToken}` }),
+                ...options.headers
+            };
+
+            try {
+                const response = await fetch(API_BASE_URL + url, {
+                    ...options,
+                    headers
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || `HTTP ${response.status}`);
+                }
+                
+                return data;
+            } catch (error) {
+                log(`API Error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                log('Attempting to login...');
+                const response = await makeRequest('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+
+                authToken = response.data.token;
+                document.getElementById('auth-status').textContent = `✅ Logged in as ${response.data.user.name}`;
+                document.getElementById('createTaskBtn').disabled = false;
+                
+                log('Login successful', 'success');
+            } catch (error) {
+                document.getElementById('auth-status').textContent = `❌ Login failed: ${error.message}`;
+                log(`Login failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function createTask() {
+            const title = document.getElementById('taskTitle').value;
+
+            try {
+                log('Creating test task...');
+                const response = await makeRequest('/tasks', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        title: title,
+                        description: 'This task is created for testing file deletion functionality',
+                        priority: 'medium',
+                        due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+                    })
+                });
+
+                currentTaskId = response.data.task.id;
+                document.getElementById('task-status').textContent = `✅ Task created with ID: ${currentTaskId}`;
+                document.getElementById('fileInput').disabled = false;
+                document.getElementById('uploadBtn').disabled = false;
+                
+                log(`Task created successfully (ID: ${currentTaskId})`, 'success');
+                loadAttachments();
+            } catch (error) {
+                document.getElementById('task-status').textContent = `❌ Task creation failed: ${error.message}`;
+                log(`Task creation failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function uploadFiles() {
+            const fileInput = document.getElementById('fileInput');
+            const files = fileInput.files;
+
+            if (files.length === 0) {
+                log('No files selected', 'error');
+                return;
+            }
+
+            try {
+                log(`Uploading ${files.length} file(s)...`);
+                const formData = new FormData();
+                
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('files[]', files[i]);
+                }
+
+                const response = await fetch(`${API_BASE_URL}/tasks/${currentTaskId}/attachments`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Upload failed');
+                }
+
+                document.getElementById('upload-status').textContent = `✅ ${files.length} file(s) uploaded successfully`;
+                log(`Files uploaded successfully`, 'success');
+                
+                // Clear file input
+                fileInput.value = '';
+                
+                // Reload attachments
+                await loadAttachments();
+            } catch (error) {
+                document.getElementById('upload-status').textContent = `❌ Upload failed: ${error.message}`;
+                log(`File upload failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function loadAttachments() {
+            if (!currentTaskId) return;
+
+            try {
+                log('Loading attachments...');
+                const response = await makeRequest(`/tasks/${currentTaskId}/attachments`);
+                attachments = response.data || [];
+                
+                renderAttachments();
+                document.getElementById('verifyBtn').disabled = attachments.length === 0;
+                
+                log(`Loaded ${attachments.length} attachment(s)`, 'success');
+            } catch (error) {
+                log(`Failed to load attachments: ${error.message}`, 'error');
+            }
+        }
+
+        function renderAttachments() {
+            const container = document.getElementById('attachments-list');
+            
+            if (attachments.length === 0) {
+                container.innerHTML = '<p>No attachments</p>';
+                return;
+            }
+
+            container.innerHTML = attachments.map(attachment => `
+                <div class="attachment-item" id="attachment-${attachment.id}">
+                    <div class="attachment-info">
+                        <strong>${attachment.original_name}</strong><br>
+                        <small>Size: ${(attachment.file_size / 1024).toFixed(2)} KB | Type: ${attachment.mime_type}</small><br>
+                        <small>Uploaded: ${new Date(attachment.created_at).toLocaleString()}</small>
+                    </div>
+                    <div>
+                        <button onclick="downloadAttachment(${attachment.id}, '${attachment.original_name}')">Download</button>
+                        <button class="delete-btn" onclick="deleteAttachment(${attachment.id}, '${attachment.original_name}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function deleteAttachment(attachmentId, fileName) {
+            if (!confirm(`Are you sure you want to delete "${fileName}"?`)) {
+                return;
+            }
+
+            try {
+                log(`Deleting attachment: ${fileName}...`);
+                
+                await makeRequest(`/tasks/${currentTaskId}/attachments/${attachmentId}`, {
+                    method: 'DELETE'
+                });
+
+                log(`✅ File "${fileName}" deleted successfully`, 'success');
+                
+                // Remove from local array
+                attachments = attachments.filter(a => a.id !== attachmentId);
+                
+                // Re-render attachments
+                renderAttachments();
+                
+                // Enable verification button
+                document.getElementById('verifyBtn').disabled = false;
+                
+            } catch (error) {
+                log(`❌ Failed to delete "${fileName}": ${error.message}`, 'error');
+            }
+        }
+
+        async function downloadAttachment(attachmentId, fileName) {
+            try {
+                log(`Downloading attachment: ${fileName}...`);
+                
+                const response = await fetch(`${API_BASE_URL}/tasks/${currentTaskId}/attachments/${attachmentId}/download`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+
+                log(`Downloaded: ${fileName}`, 'success');
+            } catch (error) {
+                log(`Download failed for "${fileName}": ${error.message}`, 'error');
+            }
+        }
+
+        async function verifyDeletion() {
+            const results = document.getElementById('verification-results');
+            results.innerHTML = '<p>🔍 Verifying deletion results...</p>';
+
+            try {
+                log('Verifying deletion results...');
+                
+                // Check if attachments still exist in database via API
+                const response = await makeRequest(`/tasks/${currentTaskId}/attachments`);
+                const remainingAttachments = response.data || [];
+                
+                results.innerHTML = `
+                    <div class="success">
+                        <h4>✅ Verification Results:</h4>
+                        <ul>
+                            <li><strong>Database Check:</strong> ${remainingAttachments.length} attachment(s) remaining</li>
+                            <li><strong>UI State:</strong> ${attachments.length} attachment(s) displayed</li>
+                            <li><strong>Consistency:</strong> ${remainingAttachments.length === attachments.length ? '✅ Consistent' : '❌ Inconsistent'}</li>
+                        </ul>
+                        ${remainingAttachments.length === 0 ? 
+                            '<p><strong>🎉 SUCCESS:</strong> All files have been properly deleted from both database and UI!</p>' : 
+                            '<p><strong>ℹ️ INFO:</strong> Some files still remain in the system.</p>'
+                        }
+                    </div>
+                `;
+                
+                log(`Verification complete. ${remainingAttachments.length} files remain in system.`, 
+                     remainingAttachments.length === 0 ? 'success' : 'info');
+                
+            } catch (error) {
+                results.innerHTML = `
+                    <div class="error">
+                        <h4>❌ Verification Failed:</h4>
+                        <p>Error: ${error.message}</p>
+                    </div>
+                `;
+                log(`Verification failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Initialize
+        log('File Deletion Test Interface loaded. Please start by logging in.');
+    </script>
+</body>
+</html>

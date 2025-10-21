@@ -86,6 +86,14 @@ class Task extends Model
     }
 
     /**
+     * Get the attachments for the task.
+     */
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(TaskAttachment::class)->orderBy('created_at', 'desc');
+    }
+
+    /**
      * Check if the current user can postpone this task.
      */
     public function canBePostponedBy(User $user): bool

@@ -110,100 +110,67 @@
                                 @enderror
                             </div>
 
-                            <!-- Assign to User -->
+                            <!-- Assign to Users (multiple) -->
                             <div class="space-y-2">
-                                <label for="assigned_user_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Assign to User (Optional)
-                                </label>
-                                
-                                <!-- Custom Searchable Dropdown -->
-                                <div class="relative">
-                                    <!-- Hidden Input for Form Submission -->
-                                    <input type="hidden" id="assigned_user_id" name="assigned_user_id" value="{{ old('assigned_user_id', $task->assigned_user_id) }}">
-                                    
-                                    <!-- Search Input -->
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                            </svg>
-                                        </div>
-                                        <input type="text" 
-                                               id="userSearchInput" 
-                                               class="block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all duration-200"
-                                               placeholder="Search users or keep for myself..."
-                                               autocomplete="off"
-                                               onclick="toggleUserDropdown()"
-                                               onkeyup="filterEditUsers(this)"
-                                               value="{{ old('assigned_user_id', $task->assigned_user_id) ? ($users->where('id', old('assigned_user_id', $task->assigned_user_id))->first()->name ?? 'Keep task for myself') : 'Keep task for myself' }}">
-                                        <div class="absolute inset-y-0 right-0 flex items-center">
-                                            <button type="button" 
-                                                    id="clearUserBtn" 
-                                                    onclick="clearSelectedUser()"
-                                                    class="mr-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 {{ old('assigned_user_id', $task->assigned_user_id) ? '' : 'hidden' }}">
-                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                </svg>
-                                            </button>
-                                            <button type="button" 
-                                                    onclick="toggleUserDropdown()" 
-                                                    class="pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200">
-                                                <svg class="h-5 w-5 transform transition-transform duration-200" id="dropdownArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Dropdown List -->
-                                    <div id="userDropdown" class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden custom-edit-scrollbar">
-                                        <!-- Keep for myself option -->
-                                        <div class="user-option px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer border-b border-gray-200 dark:border-gray-600 transition-colors duration-200" 
-                                             onclick="selectUser('', 'Keep task for myself')"
-                                             data-user-name="keep task for myself" 
-                                             data-user-username="myself">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Assign Users</label>
+
+                                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                                    <!-- Keep for myself checkbox -->
+                                    <label class="flex items-center p-3 rounded-lg border-2 border-transparent hover:border-rose-200 dark:hover:border-rose-600 cursor-pointer">
+                                        <input type="checkbox" id="keep_self" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-blue-300 dark:border-blue-600 rounded">
+                                        <div class="ml-4 flex-1">
                                             <div class="flex items-center space-x-3">
-                                                <div class="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                                    ME
-                                                </div>
-                                                <div>
-                                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Keep task for myself</div>
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400">No assignment needed</div>
-                                                </div>
+                                                <span class="text-sm font-semibold text-blue-900 dark:text-blue-200">👤 Keep task for myself</span>
+                                                <span class="text-xs px-2 py-1 bg-blue-200 dark:bg-blue-700 text-blue-800 dark:text-blue-200 rounded-full font-medium">Personal</span>
                                             </div>
+                                            <div class="text-xs text-blue-600 dark:text-blue-400 mt-1 font-medium">Assign this task to yourself only</div>
                                         </div>
-                                        
-                                        <!-- User options -->
-                                        @foreach($users as $user)
-                                            <div class="user-option px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer transition-colors duration-200" 
-                                                 onclick="selectUser('{{ $user->id }}', '{{ $user->name }}')"
-                                                 data-user-name="{{ strtolower($user->name) }}" 
-                                                 data-user-username="{{ strtolower($user->username ?? '') }}">
-                                                <div class="flex items-center space-x-3">
-                                                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                                                        {{ strtoupper(substr($user->name, 0, 2)) }}
-                                                    </div>
-                                                    <div>
-                                                        <div class="text-sm font-medium text-gray-900 dark:text-white">👤 {{ $user->username ?? $user->name }}</div>
+                                    </label>
+
+                                    <!-- Divider -->
+                                    <div class="flex items-center py-2">
+                                        <div class="flex-1 border-t border-gray-200 dark:border-gray-600"></div>
+                                        <span class="px-3 text-xs text-gray-500 dark:text-gray-400 font-medium">OR ASSIGN TO OTHERS</span>
+                                        <div class="flex-1 border-t border-gray-200 dark:border-gray-600"></div>
+                                    </div>
+
+                                    <!-- Other users -->
+                                    @php $currentAssigned = $task->assignedUsers->pluck('id')->toArray(); @endphp
+                                    @foreach($users as $user)
+                                        @if($user->id != auth()->id())
+                                            <label class="user-item other-user flex items-center p-4 hover:bg-white/60 dark:hover:bg-gray-800/60 rounded-xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-rose-200 dark:hover:border-rose-600 shadow-sm hover:shadow-md" 
+                                                   data-user-name="{{ strtolower($user->name) }}" 
+                                                   data-user-email="{{ strtolower($user->email) }}"
+                                                   data-user-username="{{ strtolower($user->username ?? '') }}">
+                                                <input type="checkbox" 
+                                                       name="assigned_users[]" 
+                                                       value="{{ $user->id }}"
+                                                       id="user_{{ $user->id }}"
+                                                       {{ in_array($user->id, old('assigned_users', $currentAssigned)) ? 'checked' : '' }}
+                                                       class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded user-checkbox transition-all duration-200">
+                                                <div class="ml-4 flex-1">
+                                                    <div class="flex items-center space-x-3">
+                                                        <span class="text-sm font-semibold text-gray-900 dark:text-white">👤 {{ $user->username ?? $user->name }}</span>
                                                         @if($user->name && $user->username && $user->username !== $user->name)
-                                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ $user->name }}</div>
+                                                            <span class="text-xs px-2 py-1 bg-rose-100 dark:bg-rose-800 text-rose-600 dark:text-rose-300 rounded-full font-medium">{{ $user->name }}</span>
                                                         @endif
                                                     </div>
                                                 </div>
-                                            </div>
-                                        @endforeach
-                                        
-                                        <!-- No Results Message -->
-                                        <div id="noEditResults" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400 hidden">
-                                            <svg class="mx-auto h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                            </svg>
-                                            <div class="text-sm">No users found matching your search</div>
-                                        </div>
+                                            </label>
+                                        @endif
+                                    @endforeach
+
+                                    <!-- Select/Clear actions -->
+                                    <div class="px-4 py-3 bg-white/20 dark:bg-gray-800/20 border-t border-white/20 dark:border-gray-600/20 flex space-x-2 rounded-b-xl">
+                                        <button type="button" id="select-all-btn" class="flex-1 px-3 py-2 text-xs bg-rose-200 hover:bg-rose-300 dark:bg-rose-700 dark:hover:bg-rose-600 text-rose-800 dark:text-rose-200 rounded-lg transition-colors font-medium">✓ Select All</button>
+                                        <button type="button" id="clear-all-btn" class="flex-1 px-3 py-2 text-xs bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg transition-colors font-medium">✕ Clear All</button>
                                     </div>
                                 </div>
-                                
-                                @error('assigned_user_id')
+
+                                @error('assigned_users')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                                @error('assigned_users.*')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>

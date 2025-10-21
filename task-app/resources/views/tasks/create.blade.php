@@ -183,7 +183,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Create New Task</h1>
                 
-                <form action="{{ route('tasks.store') }}" method="POST" class="space-y-6">
+                <form action="{{ route('tasks.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                             @csrf
                             
                             <!-- Title -->
@@ -402,6 +402,65 @@
                                 @enderror
                             </div>
 
+                            <!-- File Attachments -->
+                            <div class="space-y-2">
+                                <label class="flex items-center text-sm font-semibold text-gray-900 dark:text-white">
+                                    <div class="w-4 h-4 mr-2 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                        </svg>
+                                    </div>
+                                    Attachments (Optional)
+                                </label>
+                                
+                                <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-dashed border-green-300 dark:border-green-600 rounded-xl p-6 transition-all duration-300 hover:border-green-400 dark:hover:border-green-500 hover:shadow-lg">
+                                    <div class="text-center">
+                                        <svg class="mx-auto h-12 w-12 text-green-400 dark:text-green-500" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        
+                                        <div class="mt-4">
+                                            <label for="attachments" class="cursor-pointer">
+                                                <span class="mt-2 block text-sm font-medium text-gray-900 dark:text-white">
+                                                    Upload files or drag and drop
+                                                </span>
+                                                <span class="mt-1 block text-xs text-gray-500 dark:text-gray-400">
+                                                    PDF, Images, Word, Excel, PowerPoint files up to 10MB each (Max 5 files)
+                                                </span>
+                                            </label>
+                                            <input id="attachments" 
+                                                   name="attachments[]" 
+                                                   type="file" 
+                                                   multiple 
+                                                   accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx,.txt,.ppt,.pptx"
+                                                   class="hidden"
+                                                   onchange="handleFileSelect(event)">
+                                        </div>
+                                        
+                                        <button type="button" onclick="document.getElementById('attachments').click()" 
+                                                class="mt-4 inline-flex items-center px-4 py-2 border border-green-300 dark:border-green-600 rounded-lg shadow-sm text-sm font-medium text-green-700 dark:text-green-300 bg-white dark:bg-gray-800 hover:bg-green-50 dark:hover:bg-green-900/30 transition-all duration-200">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                            </svg>
+                                            Select Files
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Selected Files Display -->
+                                    <div id="file-list" class="mt-4 space-y-2 hidden">
+                                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Selected Files:</h4>
+                                        <div id="file-items" class="space-y-1"></div>
+                                    </div>
+                                </div>
+                                
+                                @error('attachments')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                                @error('attachments.*')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <div class="flex items-center justify-between pt-6">
                                 <button type="submit" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 border border-transparent rounded-xl font-semibold text-sm text-white uppercase tracking-widest hover:from-blue-600 hover:to-purple-700 focus:from-blue-600 focus:to-purple-700 active:from-blue-700 active:to-purple-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -418,6 +477,117 @@
     </div>
 
     <script>
+        // File handling functionality
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            const fileList = document.getElementById('file-list');
+            const fileItems = document.getElementById('file-items');
+            
+            if (files.length > 0) {
+                fileList.classList.remove('hidden');
+                fileItems.innerHTML = '';
+                
+                // Validate file count
+                if (files.length > 5) {
+                    alert('Maximum 5 files allowed');
+                    event.target.value = '';
+                    fileList.classList.add('hidden');
+                    return;
+                }
+                
+                Array.from(files).forEach((file, index) => {
+                    // Validate file size (10MB max)
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert(`File "${file.name}" is too large. Maximum size is 10MB.`);
+                        return;
+                    }
+                    
+                    // Get file icon
+                    const fileIcon = getFileIcon(file.type, file.name);
+                    
+                    // Create file item
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'flex items-center justify-between p-2 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600';
+                    fileItem.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <span class="text-2xl">${fileIcon}</span>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">${file.name}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">${formatFileSize(file.size)}</p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="removeFile(${index})" class="text-red-500 hover:text-red-700 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    `;
+                    fileItems.appendChild(fileItem);
+                });
+            } else {
+                fileList.classList.add('hidden');
+            }
+        }
+        
+        function getFileIcon(mimeType, fileName) {
+            const extension = fileName.split('.').pop().toLowerCase();
+            
+            if (mimeType.startsWith('image/')) return '🖼️';
+            if (mimeType === 'application/pdf') return '📄';
+            if (mimeType.includes('word') || extension === 'doc' || extension === 'docx') return '📝';
+            if (mimeType.includes('excel') || extension === 'xls' || extension === 'xlsx') return '📊';
+            if (mimeType.includes('powerpoint') || extension === 'ppt' || extension === 'pptx') return '📈';
+            if (mimeType === 'text/plain') return '📋';
+            return '📎';
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function removeFile(index) {
+            const fileInput = document.getElementById('attachments');
+            const dt = new DataTransfer();
+            const files = Array.from(fileInput.files);
+            
+            files.splice(index, 1);
+            
+            files.forEach(file => dt.items.add(file));
+            fileInput.files = dt.files;
+            
+            handleFileSelect({ target: fileInput });
+        }
+        
+        // Drag and drop functionality
+        const dropZone = document.querySelector('.bg-gradient-to-r.from-green-50');
+        
+        if (dropZone) {
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dropZone.classList.add('border-green-500', 'bg-green-100', 'dark:bg-green-900/40');
+            });
+            
+            dropZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                dropZone.classList.remove('border-green-500', 'bg-green-100', 'dark:bg-green-900/40');
+            });
+            
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dropZone.classList.remove('border-green-500', 'bg-green-100', 'dark:bg-green-900/40');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    document.getElementById('attachments').files = files;
+                    handleFileSelect({ target: document.getElementById('attachments') });
+                }
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const userSearch = document.getElementById('user-search');
             const selectedCount = document.getElementById('selected-count');

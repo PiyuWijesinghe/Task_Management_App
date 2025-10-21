@@ -23,21 +23,14 @@ const Login = () => {
     setMessage('');
 
     try {
-      // First get CSRF cookie for stateful requests
-      await fetch('http://127.0.0.1:8000/sanctum/csrf-cookie', {
-        method: 'GET',
-        credentials: 'include',
-      });
-
-      // Then make the login request
+      // Stateless API login (Bearer token) — no CSRF/cookies needed
       const response = await fetch('http://127.0.0.1:8000/api/v1/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
+          // 'X-Requested-With': 'XMLHttpRequest', // not required for stateless API
         },
-        credentials: 'include',
         body: JSON.stringify({
           username: formData.username,
           password: formData.password

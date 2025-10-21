@@ -9,8 +9,10 @@ class TaskPolicy
 {
     public function view(User $user, Task $task)
     {
-        // Allow both creator and assigned user to view
-        return $user->id === $task->user_id || $user->id === $task->assigned_user_id;
+        // Allow creator, assigned user, and users in many-to-many relationship to view
+        return $user->id === $task->user_id || 
+               $user->id === $task->assigned_user_id ||
+               $task->assignedUsers()->where('user_id', $user->id)->exists();
     }
 
     public function update(User $user, Task $task)
