@@ -28,6 +28,18 @@ const Dashboard = ({ user, onLogout }) => {
     });
   };
 
+  // Export handlers
+  const handleExport = (type) => {
+    let url = '';
+    if (type === 'pdf') {
+      url = '/api/reports/tasks/pdf';
+    } else if (type === 'excel') {
+      url = '/api/reports/tasks/excel';
+    }
+    // Open in new tab for download
+    window.open(url, '_blank');
+  };
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -47,6 +59,13 @@ const Dashboard = ({ user, onLogout }) => {
               📋 Tasks
             </button>
           </div>
+          {/* Export Buttons */}
+          <button className="export-btn" onClick={() => handleExport('pdf')} title="Export as PDF">
+            Export PDF
+          </button>
+          <button className="export-btn" onClick={() => handleExport('excel')} title="Export as Excel">
+            Export Excel
+          </button>
           <button className="logout-button" onClick={onLogout}>
             Sign Out
           </button>

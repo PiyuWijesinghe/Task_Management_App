@@ -411,6 +411,29 @@
                                     <p class="text-xs text-red-100">Update your information</p>
                                 </div>
                             </a>
+
+                            <!-- Export PDF Button -->
+                            <a href="{{ route('reports.export', ['format' => 'pdf']) }}" target="_blank" class="flex items-center p-3 text-white rounded-lg transition duration-200 hover:scale-105 transform" style="background: linear-gradient(135deg, #ef4444 0%, #f59e42 100%);">
+                                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                <div>
+                                    <h4 class="font-semibold">Export PDF</h4>
+                                    <p class="text-xs text-red-100">Download all tasks as PDF</p>
+                                </div>
+                            </a>
+
+                            <!-- Export Excel Button -->
+                            <a href="{{ route('reports.export', ['format' => 'csv']) }}" target="_blank" class="flex items-center p-3 text-white rounded-lg transition duration-200 hover:scale-105 transform" style="background: linear-gradient(135deg, #22c55e 0%, #38bdf8 100%);">
+                                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 2v4m8-4v4"></path>
+                                </svg>
+                                <div>
+                                    <h4 class="font-semibold">Export Excel</h4>
+                                    <p class="text-xs text-green-100">Download all tasks as Excel/CSV</p>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </div>
