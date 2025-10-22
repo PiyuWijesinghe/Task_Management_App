@@ -7,30 +7,31 @@
     <style>
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            font-size: 12px;
-            line-height: 1.4;
+            font-size: 11px;
+            line-height: 1.2;
             color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 4px 4px 12px 4px;
         }
-        
+
+        /* Make header even more compact */
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 15px;
+            margin-bottom: 4px;
+            border-bottom: 1px solid #007bff;
+            padding-bottom: 2px;
         }
-        
+
         .header h1 {
             color: #007bff;
-            margin: 0 0 10px 0;
-            font-size: 24px;
+            margin: 0 0 2px 0;
+            font-size: 13px;
         }
-        
+
         .header .subtitle {
             color: #666;
             margin: 0;
-            font-size: 14px;
+            font-size: 8px;
         }
         
         .report-info {
@@ -288,23 +289,21 @@
     ?>
 
     <!-- Branded Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #007bff;padding-bottom:10px;margin-bottom:18px">
-        <div style="display:flex;align-items:center;gap:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #007bff;padding-bottom:2px;margin-bottom:4px">
+        <div style="display:flex;align-items:center;gap:4px">
             @if($logoData)
-                <img src="{{ $logoData }}" alt="{{ $companyName }}" style="height:56px;object-fit:contain;" />
+                <img src="{{ $logoData }}" alt="{{ $companyName }}" style="height:22px;object-fit:contain;" />
             @else
-                <div style="height:56px;width:56px;background:#007bff;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;border-radius:8px">
+                <div style="height:22px;width:22px;background:#007bff;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;border-radius:4px;font-size:9px;">
                     {{ strtoupper(substr($companyName,0,2)) }}
                 </div>
             @endif
-
             <div>
-                <h1 style="margin:0;color:#007bff;font-size:20px">{{ $companyName }}</h1>
-                <div style="font-size:11px;color:#666">{{ $companyAddress }}</div>
+                <h1 style="margin:0;color:#007bff;font-size:10px">{{ $companyName }}</h1>
+                <div style="font-size:7px;color:#666">{{ $companyAddress }}</div>
             </div>
         </div>
-
-        <div style="text-align:right;font-size:11px;color:#666">
+        <div style="text-align:right;font-size:7px;color:#666">
             <div>Generated: {{ $generated_at->format('F j, Y \a\t g:i:s A T') }}</div>
             <div>By: {{ $generated_by->name }}</div>
         </div>
@@ -404,13 +403,14 @@
             <table class="task-table">
                 <thead>
                     <tr>
-                        <th style="width: 5%">#</th>
-                        <th style="width: 20%">Title</th>
-                        <th style="width: 25%">Description</th>
+                        <th style="width: 5%">No</th>
+                        <th style="width: 16%">Title</th>
+                        <th style="width: 22%">Description</th>
                         <th style="width: 10%">Priority</th>
                         <th style="width: 10%">Status</th>
                         <th style="width: 12%">Due Date</th>
-                        <th style="width: 18%">Assignees</th>
+                        <th style="width: 13%">Assignees</th>
+                        <th style="width: 12%">Creator</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -453,6 +453,9 @@
                                 @if(!$task->assignedUser && $task->assignedUsers->count() === 0)
                                     <em>Unassigned</em>
                                 @endif
+                            </td>
+                            <td>
+                                {{ $task->user ? $task->user->name : 'N/A' }}
                             </td>
                         </tr>
                     @endforeach

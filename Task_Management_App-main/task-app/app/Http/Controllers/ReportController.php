@@ -268,9 +268,9 @@ class ReportController extends Controller
         }
 
         // Prepare rows for Excel/CSV
-        $rows = [];
-        // Header
-        $rows[] = ['Title', 'Status', 'Due Date', 'Assignee', 'Priority'];
+    $rows = [];
+    // Header
+    $rows[] = ['Title', 'Status', 'Due Date', 'Assignee', 'Priority', 'Creator'];
 
         foreach ($tasks as $task) {
             // Collect all assignee names: primary assigned_user plus any many-to-many assignedUsers
@@ -292,12 +292,15 @@ class ReportController extends Controller
                 $assigneeName = null;
             }
 
+            $creatorName = $task->user ? $task->user->name : null;
+
             $rows[] = [
                 $task->title,
                 $task->status,
                 $task->due_date ? $task->due_date->format('Y-m-d') : null,
                 $assigneeName,
                 $task->priority,
+                $creatorName,
             ];
         }
 
