@@ -17,24 +17,28 @@ class CreateMultipleUsersSeeder extends Seeder
                 'username' => 'admin',
                 'email' => 'admin@example.com',
                 'password' => Hash::make('password'),
+                'role' => 'admin',
             ],
             [
-                'name' => 'Demo User',
-                'username' => 'demo',
-                'email' => 'demo@example.com',
+                'name' => 'Manager User',
+                'username' => 'manager',
+                'email' => 'manager@example.com',
                 'password' => Hash::make('password'),
+                'role' => 'manager',
             ],
             [
                 'name' => 'John Doe',
                 'username' => 'johndoe',
                 'email' => 'john@example.com',
                 'password' => Hash::make('password'),
+                'role' => 'user',
             ],
             [
                 'name' => 'Jane Smith',
                 'username' => 'janesmith',
                 'email' => 'jane@example.com',
                 'password' => Hash::make('password'),
+                'role' => 'user',
             ]
         ];
 

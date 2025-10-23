@@ -37,6 +37,14 @@ class TaskApiController extends Controller
                 $request->merge(['status' => $this->normalizeStatus($request->get('status'))]);
             }
 
+            // Accept legacy query parameter names used by older clients/tests
+            if ($request->filled('sort_by')) {
+                $request->merge(['sort' => $request->get('sort_by')]);
+            }
+            if ($request->filled('sort_dir')) {
+                $request->merge(['order' => $request->get('sort_dir')]);
+            }
+
             $user = $request->user();
 
             // Validate query params (using names required by new spec: sort, order, search, status, priority, page, per_page)
@@ -93,26 +101,30 @@ class TaskApiController extends Controller
             $perPage = (int) $request->get('per_page', 10);
             $tasks = $query->paginate($perPage)->appends($request->query());
 
+            $pagination = [
+                'current_page' => $tasks->currentPage(),
+                'last_page' => $tasks->lastPage(),
+                'per_page' => $tasks->perPage(),
+                'total' => $tasks->total(),
+                'from' => $tasks->firstItem(),
+                'to' => $tasks->lastItem(),
+                'has_more_pages' => $tasks->hasMorePages(),
+                'links' => [
+                    'first' => $tasks->url(1),
+                    'last' => $tasks->url($tasks->lastPage()),
+                    'prev' => $tasks->previousPageUrl(),
+                    'next' => $tasks->nextPageUrl(),
+                ]
+            ];
+
             return response()->json([
                 'success' => true,
                 'message' => 'Tasks retrieved successfully',
                 'data' => [
                     'tasks' => $tasks->items(),
-                    'pagination' => [
-                        'current_page' => $tasks->currentPage(),
-                        'last_page' => $tasks->lastPage(),
-                        'per_page' => $tasks->perPage(),
-                        'total' => $tasks->total(),
-                        'from' => $tasks->firstItem(),
-                        'to' => $tasks->lastItem(),
-                        'has_more_pages' => $tasks->hasMorePages(),
-                        'links' => [
-                            'first' => $tasks->url(1),
-                            'last' => $tasks->url($tasks->lastPage()),
-                            'prev' => $tasks->previousPageUrl(),
-                            'next' => $tasks->nextPageUrl(),
-                        ]
-                    ]
+                    // Keep old `pagination` for new clients, but also provide `meta` for tests/legacy clients
+                    'pagination' => $pagination,
+                    'meta' => $pagination,
                 ]
             ], 200);
         } catch (\Exception $e) {

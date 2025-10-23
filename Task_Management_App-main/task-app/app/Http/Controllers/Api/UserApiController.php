@@ -161,9 +161,8 @@ class UserApiController extends Controller
     public function update(Request $request, User $user): JsonResponse
     {
         try {
-            // Basic permission check - only user can update their own profile
-            // You can extend this for admin roles
-            if ($request->user()->id !== $user->id) {
+            // Basic permission check - user can update their own profile, admin can update any
+            if ($request->user()->id !== $user->id && !$request->user()->hasRole('admin')) {
                 return response()->json([
                     'success' => false,
                     'message' => 'You do not have permission to update this user'
@@ -215,7 +214,14 @@ class UserApiController extends Controller
     public function destroy(Request $request, User $user): JsonResponse
     {
         try {
-            // Basic permission check - prevent self-deletion
+            // Only admins can delete users via this endpoint, and they cannot delete themselves
+            if (!$request->user()->hasRole('admin')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only admins can delete users'
+                ], 403);
+            }
+
             if ($request->user()->id === $user->id) {
                 return response()->json([
                     'success' => false,
@@ -223,12 +229,13 @@ class UserApiController extends Controller
                 ], 400);
             }
 
-            // Additional admin permission checks can be added here
-            // For now, only allow users to delete their own account through profile
+            // Proceed with deletion
+            $user->delete();
+
             return response()->json([
-                'success' => false,
-                'message' => 'User deletion not allowed through this endpoint'
-            ], 403);
+                'success' => true,
+                'message' => 'User deleted successfully'
+            ], 200);
 
         } catch (\Exception $e) {
             return response()->json([

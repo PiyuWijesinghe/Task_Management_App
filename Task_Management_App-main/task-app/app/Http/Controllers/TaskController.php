@@ -252,7 +252,8 @@ class TaskController extends Controller
             'mime_type' => $file->getMimeType(),
             'size' => $file->getSize(),
             'extension' => $extension,
-            'uploaded_by' => auth()->id(),
+            // Ensure we store the numeric user id (auth()->id() may be overridden to return username)
+            'uploaded_by' => auth()->user() ? auth()->user()->id : null,
         ]);
     }
 

@@ -23,6 +23,7 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'role',
     ];
     /**
      * Get tasks created by this user.
@@ -71,5 +72,13 @@ class User extends Authenticatable
     public function getAuthIdentifierName()
     {
         return 'username';
+    }
+
+    /**
+     * Check if user has given role
+     */
+    public function hasRole(string $role): bool
+    {
+        return isset($this->role) && strtolower($this->role) === strtolower($role);
     }
 }
