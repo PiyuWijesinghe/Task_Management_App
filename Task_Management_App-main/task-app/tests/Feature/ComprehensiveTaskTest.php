@@ -36,7 +36,7 @@ class ComprehensiveTaskTest extends TestCase
     public function test_user_can_update_task()
     {
         $user = User::factory()->create();
-        $task = Task::factory()->create(['user_id' => $user->id]);
+    $task = Task::factory()->create(['user_id' => $user->id, 'due_date' => now()->addDay()->toDateString()]);
 
         $this->actingAs($user);
 
