@@ -59,13 +59,7 @@ const Dashboard = ({ user, onLogout }) => {
               📋 Tasks
             </button>
           </div>
-          {/* Export Buttons */}
-          <button className="export-btn" onClick={() => handleExport('pdf')} title="Export as PDF">
-            Export PDF
-          </button>
-          <button className="export-btn" onClick={() => handleExport('excel')} title="Export as Excel">
-            Export Excel
-          </button>
+          
           <button className="logout-button" onClick={onLogout}>
             Sign Out
           </button>

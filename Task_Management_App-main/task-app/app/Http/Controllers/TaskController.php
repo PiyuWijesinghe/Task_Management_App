@@ -12,6 +12,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\TaskAssignedNotification;
+use App\Notifications\TaskPostponedNotification;
+use App\Notifications\CommentAddedNotification;
 
 class TaskController extends Controller
 {
@@ -382,11 +386,15 @@ class TaskController extends Controller
         // Sync the many-to-many relationship
         if (isset($validated['assigned_users']) && !empty($validated['assigned_users'])) {
             $task->assignedUsers()->sync($validated['assigned_users']);
-            
+
+            // Notify newly assigned users
+            $assignedUsers = User::whereIn('id', $validated['assigned_users'])->get();
+            Notification::send($assignedUsers, new TaskAssignedNotification($task, auth()->user()));
+
             // Get names of assigned users for success message
-            $assignedUserNames = User::whereIn('id', $validated['assigned_users'])->pluck('name')->toArray();
+            $assignedUserNames = $assignedUsers->pluck('name')->toArray();
             $userNames = implode(', ', $assignedUserNames);
-            
+
             return redirect()->back()->with('success', 'Task "' . $task->title . '" assigned to ' . $userNames . ' successfully!');
         } else {
             // Remove all assignments
@@ -423,13 +431,31 @@ class TaskController extends Controller
             'old_due_date' => $oldDueDate,
             'new_due_date' => $validated['new_due_date'],
             'reason' => $validated['reason'],
-            'postponed_by' => auth()->id(),
+            // auth()->id() is configured to return username; use numeric id instead
+            'postponed_by' => auth()->user() ? auth()->user()->id : null,
         ]);
 
         // Update the task's due date
         $task->update([
             'due_date' => $validated['new_due_date'],
         ]);
+
+        // Notify the task owner and assigned users (excluding the actor)
+        $recipients = collect();
+        if ($task->user) {
+            $recipients->push($task->user);
+        }
+        // include primary assigned user (assigned_user_id) and many-to-many assigned users
+        if ($task->assignedUser) {
+            $recipients->push($task->assignedUser);
+        }
+        $recipients = $recipients->merge($task->assignedUsers)->unique('id')->filter(function ($u) {
+            return $u && $u->id !== auth()->id();
+        });
+
+        if ($recipients->isNotEmpty()) {
+            Notification::send($recipients, new TaskPostponedNotification($task, $oldDueDate, $validated['new_due_date'], auth()->user()));
+        }
 
         return redirect()->back()->with('success', 'Task "' . $task->title . '" has been postponed successfully!');
     }
@@ -458,6 +484,19 @@ class TaskController extends Controller
             'user_id' => auth()->user()->id,
             'comment' => $validated['comment'],
         ]);
+
+        // Notify task owner and assigned users (excluding commenter)
+        $recipients = collect();
+        if ($task->user) {
+            $recipients->push($task->user);
+        }
+        $recipients = $recipients->merge($task->assignedUsers)->unique('id')->filter(function ($u) {
+            return $u && $u->id !== auth()->id();
+        });
+
+        if ($recipients->isNotEmpty()) {
+            Notification::send($recipients, new CommentAddedNotification($task, auth()->user()));
+        }
 
         return redirect()->back()->with('success', 'Comment added successfully!');
     }
