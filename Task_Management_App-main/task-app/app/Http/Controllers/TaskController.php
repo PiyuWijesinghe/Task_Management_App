@@ -248,8 +248,8 @@ class TaskController extends Controller
         // Store file in task attachments directory
         $filePath = $file->storeAs('task-attachments', $storedName, 'local');
         
-        // Create attachment record
-        $task->attachments()->create([
+        // Create attachment record and return it
+        $attachment = $task->attachments()->create([
             'original_name' => $originalName,
             'stored_name' => $storedName,
             'file_path' => $filePath,
@@ -259,6 +259,8 @@ class TaskController extends Controller
             // Ensure we store the numeric user id (auth()->id() may be overridden to return username)
             'uploaded_by' => auth()->user() ? auth()->user()->id : null,
         ]);
+
+        return $attachment;
     }
 
     /**
