@@ -913,7 +913,133 @@ For support and questions:
 
 ## Development & Deployment
 
-### Testing
+### Testing (Automated tests & CI)
+
+This project uses Laravel's PHPUnit test runner for backend tests and the usual Node test tools for the frontend. Below is a focused testing plan and practical guidance so you can implement the requested automated tests (15–20+ cases) and wire them into CI.
+
+1) Objectives
+ - Core Functional Testing
+   - Task CRUD: create, update, delete and mark complete. Assert DB state and HTTP responses.
+   - Task Assignment: assign/unassign users and verify access control for assignees vs non-assignees.
+   - Task Postpone: change due dates, store postpone reasons, and assert the history exists.
+   - Priority Levels: ensure High/Medium/Low are persisted and returned by API.
+   - Comments: add, fetch, update, and delete comments for tasks.
+
+ - User & Role Testing
+   - Authentication: login/logout, token/session behavior and protected routes.
+   - Role-based access: Admin, Manager, User — ensure correct permissions and 403/404 responses where appropriate.
+
+ - File Handling Tests
+   - Upload valid and invalid files (types/sizes) using Laravel's UploadedFile::fake(). Assert storage and DB records.
+   - Delete attachments and assert permission checks and file removal from storage.
+
+ - Notification Tests
+   - Use Notification::fake() to assert notifications are sent when: task assigned, task postponed, comment added.
+
+2) Test structure & best practices
+ - Organize tests under `tests/Feature` and `tests/Unit`.
+ - Use `RefreshDatabase` (or `RefreshDatabase` + in-memory sqlite for speed) to isolate tests:
+   ```php
+   use Illuminate\\Foundation\\Testing\\RefreshDatabase;
+
+   class Feature\\TaskTest extends TestCase
+   {
+       use RefreshDatabase;
+       // tests here
+   }
+   ```
+ - Naming convention examples:
+   - `tests/Feature/TaskTest.php` (task CRUD/assignment/postpone)
+   - `tests/Feature/UserRoleTest.php` (auth and role permissions)
+   - `tests/Feature/FileAttachmentTest.php` (upload/delete)
+   - `tests/Feature/NotificationTest.php` (notifications)
+ - Prefer readable, single-purpose tests. Aim for ~15–20 focused cases covering happy paths and important edge cases.
+
+3) Useful Laravel testing helpers (examples)
+ - Faking Storage & Uploaded files
+   ```php
+   use Illuminate\\Http\\UploadedFile;
+   use Illuminate\\Support\\Facades\\Storage;
+   
+   Storage::fake('local');
+   $file = UploadedFile::fake()->create('document.pdf', 100); // size in KB
+   $response = $this->postJson(route('tasks.attachments.store', $task->id), [
+       'files' => [$file]
+   ]);
+   Storage::disk('local')->assertExists('task-attachments/'.$file->hashName());
+   $this->assertDatabaseHas('task_attachments', ['original_name' => 'document.pdf']);
+   ```
+
+ - Faking Notifications
+   ```php
+   use Illuminate\\Support\\Facades\\Notification;
+
+   Notification::fake();
+   // perform action that triggers notification
+   Notification::assertSentTo($user, TaskAssignedNotification::class);
+   ```
+
+ - Asserting authorization and HTTP codes
+   ```php
+   $this->actingAs($unauthorizedUser)
+       ->deleteJson(route('tasks.destroy', $task->id))
+       ->assertStatus(403);
+   ```
+
+4) Example test cases (suggested list — expand to reach 15–20):
+ - TaskTest
+   1. Create task (assert 201 and DB record)
+   2. Update task (assert 200 and changed fields)
+   3. Delete task (assert 204 and missing in DB)
+   4. Complete task (assert status changed)
+   5. Assign users to task (assert assignees table entries)
+   6. Unassign user (assert removed)
+   7. Postpone task (assert due_date changed and postpone reason stored)
+   8. Priority set & returned correctly
+   9. Add comment and fetch comments
+
+ - UserRoleTest
+   10. Protected route returns 401 when unauthenticated
+   11. User without admin role receives 403 for admin-only endpoints
+   12. Admin can delete user (assert 200/204)
+
+ - FileAttachmentTest
+   13. Upload allowed file type and assert storage + DB
+   14. Upload disallowed type and assert 422 validation error
+   15. Delete file as owner (assert file removed and DB entry deleted)
+
+ - NotificationTest
+   16. Notification is sent on assignment
+   17. Notification is sent on postpone
+   18. Notification is sent on comment
+
+5) Running tests locally
+ - Run all backend tests (PowerShell):
+   ```powershell
+   cd task-app
+   php artisan test
+   ```
+ - Run a single test class or method:
+   ```powershell
+   php artisan test --filter=TaskTest
+   php artisan test --filter=testCreateTask
+   ```
+
+6) CI / integration notes
+ - Add a CI workflow (GitHub Actions, GitLab CI) that:
+   - Installs PHP, Composer and Node
+   - Runs `composer install --no-interaction --prefer-dist`
+   - Prepares database (sqlite in-memory or MySQL service)
+   - Runs migrations and seeds (if needed)
+   - Executes `php artisan test --parallel` (or plain `php artisan test`)
+ - Cache composer and npm where appropriate for speed.
+
+7) Next steps & where to implement
+ - Implement test skeletons in `tests/Feature` with the naming shown above.
+ - Use `Storage::fake()`, `Notification::fake()` and `Mail::fake()` for isolated assertions.
+ - Add factories (in `database/factories/`) for tasks, users, attachments and comments to keep tests concise.
+
+If you'd like, I can also scaffold the 15–20 test files and a basic GitHub Actions workflow in this repo — tell me "scaffold tests" and I'll create the test skeleton files next.
 
 #### Backend Testing (Laravel)
 ```bash
