@@ -1246,6 +1246,43 @@ Sample JSON response (truncated):
 }
 ```
 
+## Google Calendar Integration (Quick Start)
+
+One-way sync from the app to Google Calendar is supported via a Google Service Account.
+
+1) Enable API and create credentials
+- In Google Cloud Console, enable "Google Calendar API".
+- Create a Service Account and download its JSON key.
+- Share your target calendar with the service account email (permission: "Make changes to events").
+
+2) Configure the backend (`task-app/.env`)
+```env
+GOOGLE_SERVICE_ACCOUNT_JSON=storage/app/google-service-account.json
+GOOGLE_CALENDAR_ID=primary
+```
+
+3) Put the JSON key file in place
+- Copy the file into `task-app/storage/app/google-service-account.json`.
+- Windows PowerShell example (run inside `task-app`):
+```powershell
+New-Item -ItemType Directory -Path "storage/app" -Force
+Copy-Item "C:\path\to\service-account.json" "storage\app\google-service-account.json"
+```
+
+4) Migrate database and run
+```powershell
+php artisan migrate
+php artisan serve
+```
+
+5) Use sync endpoints (authenticated)
+- `POST /api/v1/tasks/{task}/calendar/sync`
+- `POST /api/v1/tasks/{task}/calendar/resync`
+- `DELETE /api/v1/tasks/{task}/calendar/unsync`
+- `GET /api/v1/tasks/{task}/calendar/status`
+
+For detailed steps and notes, see `task-app/GOOGLE_CALENDAR_SETUP.md`.
+
 ### Artisan CLI (Scheduled / Server-side)
 There is an Artisan command for server-side exports suitable for cron jobs or background tasks. Example usage:
 
